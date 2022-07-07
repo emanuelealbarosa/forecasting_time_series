@@ -1,0 +1,18 @@
+TO DOs
+
+Extensions to metrics: MSE, MAE, ADJR2
+
+Check how to deal with model comparison: median error? Weighted mean of mean and se?
+
+Walk forward forecast: multistep forecasting
+
+Validation process: what are the alternatives?
+
+Check for other solutions for grid builder
+
+Catch warnings when predicting
+
+Read about error reporting
+
+Unit testing? Let's find out what it is
+
