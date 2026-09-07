@@ -12,7 +12,4 @@ Check for other solutions for grid builder
 
 Catch warnings when predicting
 
-Read about error reporting
-
-Unit testing? Let's find out what it is
 

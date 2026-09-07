@@ -1,0 +1,15 @@
+# Python bytecode / cache
+__pycache__/
+*.pyc
+*.pyo
+
+# Virtual environments
+venv/
+.venv/
+env/
+
+# IDE settings (JetBrains / PyCharm)
+.idea/
+
+# OS cruft
+.DS_Store
