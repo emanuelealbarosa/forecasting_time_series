@@ -8,36 +8,56 @@ combinations by forecast error.
 
 ## Status
 
-This is a personal research/prototyping project, not a maintained package. Of the
-methods wired into `classes/method.py`, only these are actually implemented:
+This is a personal research/prototyping project, not a maintained package. All
+methods wired into `classes/method.py` are now implemented:
 
 - **Naive** (`classes/methods/naive.py`)
 - **ETS** (`classes/methods/ets.py`)
 - **ARIMA** (`classes/methods/arima.py`)
 - **RF** (`classes/methods/rf.py`)
+- **MLP** (`classes/methods/mlp.py`) — feedforward net over a lag window
+- **CNN** (`classes/methods/cnn.py`) — 1D convolution over a lag window
+- **LSTM** (`classes/methods/lstm.py`) — single-layer LSTM
+- **CNN-LSTM** (`classes/methods/cnn_lstm.py`) — Conv1D reads subsequences, LSTM reads their summaries
+- **ConvLSTM** (`classes/methods/convlstm.py`) — ConvLSTM2D over subsequences
 
-`MLP`, `CNN`, `LSTM`, `CNN-LSTM`, `ConvLSTM`, and `twoDLSTM` are empty stub classes —
-selecting one of these in `run.py` will raise an error once `.predict()` is called.
+The neural methods (MLP through twoDLSTM) all follow the same refit-every-step
+pattern as ARIMA/RF: `predict()` builds a lagged supervised dataset from the raw
+series, fits a fresh Keras model, and predicts one step ahead. This means a grid
+search over these methods is significantly slower than over Naive/ARIMA/RF — keep
+epoch counts and the parameter grid small unless you're prepared to wait, and
+consider trimming `validation_maximum_number_of_splits` too, since each split refits
+from scratch.
+
 
 ## Installation
 
-Requires Python 3.9+ (tested on 3.12).
+Requires **Python 3.10–3.13**.
 
 ```bash
-python3 -m venv venv
-source venv/bin/activate   # on Windows: venv\Scripts\activate
+python3.12 -m venv venv       # use a Python 3.10-3.13 interpreter specifically
+source venv/bin/activate       # on Windows: venv\Scripts\activate
 pip install -r requirements.txt
 ```
 
-`requirements.txt` pins the exact versions this code was verified against
-(Naive, ARIMA, and RF paths all run cleanly end-to-end on these):
+`requirements.txt` pins the exact versions this code was verified against:
 
 ```
-numpy==2.5.3
+numpy==1.26.4
 pandas==2.2.3
 scikit-learn==1.9.0
 statsmodels==0.15.0
+tensorflow==2.16.2
 ```
+
+**Note for Intel Macs:** TensorFlow stopped publishing `x86_64` macOS wheels after
+`2.16.2` — that's the newest version installable on an Intel Mac, which is why it's
+pinned here rather than a newer release. Apple Silicon (`arm64`) Macs, Linux, and
+Windows can use newer TensorFlow versions if you prefer, but `numpy` needs to stay
+below `2.0` to satisfy `tensorflow==2.16.2`'s own requirement (`numpy<2.0.0,>=1.26.0`)
+— installing `numpy` before the rest, or with everything pinned as above in one
+`pip install -r requirements.txt` call, avoids pip resolving a newer, incompatible
+`numpy` on its own.
 
 ## Usage
 
@@ -49,8 +69,7 @@ top 5 parameter combinations ranked by RMSE.
 python run.py
 ```
 
-Swap `forecasting_method_name` in `run.py` to `'Naive'`, `'ETS'`, `'ARIMA'`, or `'RF'`
-to test a different method (each block above it defines that method's parameter
+Swap `forecasting_method_name` in `run.py` to (e.g.) `'Naive'`, `'ETS'`, `'ARIMA'`, or `'RF'` to test a different method (each block above it defines that method's parameter
 search ranges).
 
 ### Expected data structure
@@ -69,14 +88,7 @@ The `data` DataFrame passed into `grid_search.search_agent` needs:
 `run.py` currently ships with a small simulated DataFrame in place of a real dataset
 — swap that out for your own series before running anything meaningful.
 
-## Known gotchas
-
-- The simulated-data line in `run.py`
-  (`data['crossings'].values[i] = data['crossings'].values[i]*i`) relies on pandas'
-  older copy-on-write-off behavior. It works with the pinned `pandas==2.2.3`, but will
-  raise `ValueError: assignment destination is read-only` on pandas versions where
-  copy-on-write is enabled by default (e.g. pandas 3.x). Rewrite that line with
-  `.iloc` assignment if you upgrade pandas.
+## NB
 - ARIMA/ETS fits will occasionally fail to converge or throw on some parameter
   combinations — these are caught and just excluded from the ranked output.
 

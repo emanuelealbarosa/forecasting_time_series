@@ -139,21 +139,164 @@ class builder:
                                             self.grid_of_parameter_combinations.append(parameter_combination.copy())
 
         if self.method == 'MLP':
-            pass
+            self.number_input_lags_range = self.method_parameter_ranges.get('number_input_lags_range')
+            self.number_hidden_nodes_range = self.method_parameter_ranges.get('number_hidden_nodes_range')
+            self.number_epochs_range = self.method_parameter_ranges.get('number_epochs_range')
+            self.batch_size_range = self.method_parameter_ranges.get('batch_size_range')
+
+            for number_input_lags in self.number_input_lags_range:
+                for number_hidden_nodes in self.number_hidden_nodes_range:
+                    for number_epochs in self.number_epochs_range:
+                        for batch_size in self.batch_size_range:
+                            for differencing_order in self.differencing_order_range:
+                                for power_exponent in self.power_exponent_range:
+                                    for is_normalized in self.is_normalized_range:
+                                        parameter_combination['number_input_lags'] = number_input_lags
+                                        parameter_combination['number_hidden_nodes'] = number_hidden_nodes
+                                        parameter_combination['number_epochs'] = number_epochs
+                                        parameter_combination['batch_size'] = batch_size
+                                        parameter_combination['differencing_order'] = differencing_order
+                                        parameter_combination['power_exponent'] = power_exponent
+                                        parameter_combination['is_normalized'] = is_normalized
+                                        self.grid_of_parameter_combinations.append(parameter_combination.copy())
 
         if self.method == 'CNN':
-            pass
+            self.number_input_lags_range = self.method_parameter_ranges.get('number_input_lags_range')
+            self.number_filters_range = self.method_parameter_ranges.get('number_filters_range')
+            self.kernel_size_range = self.method_parameter_ranges.get('kernel_size_range')
+            self.number_epochs_range = self.method_parameter_ranges.get('number_epochs_range')
+            self.batch_size_range = self.method_parameter_ranges.get('batch_size_range')
+
+            for number_input_lags in self.number_input_lags_range:
+                for number_filters in self.number_filters_range:
+                    for kernel_size in self.kernel_size_range:
+                        for number_epochs in self.number_epochs_range:
+                            for batch_size in self.batch_size_range:
+                                for differencing_order in self.differencing_order_range:
+                                    for power_exponent in self.power_exponent_range:
+                                        for is_normalized in self.is_normalized_range:
+                                            parameter_combination['number_input_lags'] = number_input_lags
+                                            parameter_combination['number_filters'] = number_filters
+                                            parameter_combination['kernel_size'] = kernel_size
+                                            parameter_combination['number_epochs'] = number_epochs
+                                            parameter_combination['batch_size'] = batch_size
+                                            parameter_combination['differencing_order'] = differencing_order
+                                            parameter_combination['power_exponent'] = power_exponent
+                                            parameter_combination['is_normalized'] = is_normalized
+                                            self.grid_of_parameter_combinations.append(parameter_combination.copy())
 
         if self.method == 'LSTM':
-            pass
+            self.number_input_lags_range = self.method_parameter_ranges.get('number_input_lags_range')
+            self.number_lstm_units_range = self.method_parameter_ranges.get('number_lstm_units_range')
+            self.number_epochs_range = self.method_parameter_ranges.get('number_epochs_range')
+            self.batch_size_range = self.method_parameter_ranges.get('batch_size_range')
+
+            for number_input_lags in self.number_input_lags_range:
+                for number_lstm_units in self.number_lstm_units_range:
+                    for number_epochs in self.number_epochs_range:
+                        for batch_size in self.batch_size_range:
+                            for differencing_order in self.differencing_order_range:
+                                for power_exponent in self.power_exponent_range:
+                                    for is_normalized in self.is_normalized_range:
+                                        parameter_combination['number_input_lags'] = number_input_lags
+                                        parameter_combination['number_lstm_units'] = number_lstm_units
+                                        parameter_combination['number_epochs'] = number_epochs
+                                        parameter_combination['batch_size'] = batch_size
+                                        parameter_combination['differencing_order'] = differencing_order
+                                        parameter_combination['power_exponent'] = power_exponent
+                                        parameter_combination['is_normalized'] = is_normalized
+                                        self.grid_of_parameter_combinations.append(parameter_combination.copy())
 
         if self.method == 'CNN-LSTM':
-            pass
+            self.number_input_lags_range = self.method_parameter_ranges.get('number_input_lags_range')
+            self.number_subsequences_range = self.method_parameter_ranges.get('number_subsequences_range')
+            self.number_filters_range = self.method_parameter_ranges.get('number_filters_range')
+            self.kernel_size_range = self.method_parameter_ranges.get('kernel_size_range')
+            self.number_lstm_units_range = self.method_parameter_ranges.get('number_lstm_units_range')
+            self.number_epochs_range = self.method_parameter_ranges.get('number_epochs_range')
+            self.batch_size_range = self.method_parameter_ranges.get('batch_size_range')
+
+            for number_input_lags in self.number_input_lags_range:
+                for number_subsequences in self.number_subsequences_range:
+                    if number_input_lags % number_subsequences == 0:
+                        for number_filters in self.number_filters_range:
+                            for kernel_size in self.kernel_size_range:
+                                for number_lstm_units in self.number_lstm_units_range:
+                                    for number_epochs in self.number_epochs_range:
+                                        for batch_size in self.batch_size_range:
+                                            for differencing_order in self.differencing_order_range:
+                                                for power_exponent in self.power_exponent_range:
+                                                    for is_normalized in self.is_normalized_range:
+                                                        parameter_combination['number_input_lags'] = number_input_lags
+                                                        parameter_combination['number_subsequences'] = number_subsequences
+                                                        parameter_combination['number_filters'] = number_filters
+                                                        parameter_combination['kernel_size'] = kernel_size
+                                                        parameter_combination['number_lstm_units'] = number_lstm_units
+                                                        parameter_combination['number_epochs'] = number_epochs
+                                                        parameter_combination['batch_size'] = batch_size
+                                                        parameter_combination['differencing_order'] = differencing_order
+                                                        parameter_combination['power_exponent'] = power_exponent
+                                                        parameter_combination['is_normalized'] = is_normalized
+                                                        self.grid_of_parameter_combinations.append(
+                                                            parameter_combination.copy())
 
         if self.method == 'ConvLSTM':
-            pass
+            self.number_input_lags_range = self.method_parameter_ranges.get('number_input_lags_range')
+            self.number_subsequences_range = self.method_parameter_ranges.get('number_subsequences_range')
+            self.number_filters_range = self.method_parameter_ranges.get('number_filters_range')
+            self.kernel_size_range = self.method_parameter_ranges.get('kernel_size_range')
+            self.number_epochs_range = self.method_parameter_ranges.get('number_epochs_range')
+            self.batch_size_range = self.method_parameter_ranges.get('batch_size_range')
 
-        if self.method == 'BidirectionalLSTM':
-            pass
+            for number_input_lags in self.number_input_lags_range:
+                for number_subsequences in self.number_subsequences_range:
+                    if number_input_lags % number_subsequences == 0:
+                        for number_filters in self.number_filters_range:
+                            for kernel_size in self.kernel_size_range:
+                                for number_epochs in self.number_epochs_range:
+                                    for batch_size in self.batch_size_range:
+                                        for differencing_order in self.differencing_order_range:
+                                            for power_exponent in self.power_exponent_range:
+                                                for is_normalized in self.is_normalized_range:
+                                                    parameter_combination['number_input_lags'] = number_input_lags
+                                                    parameter_combination['number_subsequences'] = number_subsequences
+                                                    parameter_combination['number_filters'] = number_filters
+                                                    parameter_combination['kernel_size'] = kernel_size
+                                                    parameter_combination['number_epochs'] = number_epochs
+                                                    parameter_combination['batch_size'] = batch_size
+                                                    parameter_combination['differencing_order'] = differencing_order
+                                                    parameter_combination['power_exponent'] = power_exponent
+                                                    parameter_combination['is_normalized'] = is_normalized
+                                                    self.grid_of_parameter_combinations.append(
+                                                        parameter_combination.copy())
+
+        if self.method == 'twoDLSTM':
+            self.number_input_lags_range = self.method_parameter_ranges.get('number_input_lags_range')
+            self.number_lstm_units_layer_1_range = self.method_parameter_ranges.get(
+                'number_lstm_units_layer_1_range')
+            self.number_lstm_units_layer_2_range = self.method_parameter_ranges.get(
+                'number_lstm_units_layer_2_range')
+            self.number_epochs_range = self.method_parameter_ranges.get('number_epochs_range')
+            self.batch_size_range = self.method_parameter_ranges.get('batch_size_range')
+
+            for number_input_lags in self.number_input_lags_range:
+                for number_lstm_units_layer_1 in self.number_lstm_units_layer_1_range:
+                    for number_lstm_units_layer_2 in self.number_lstm_units_layer_2_range:
+                        for number_epochs in self.number_epochs_range:
+                            for batch_size in self.batch_size_range:
+                                for differencing_order in self.differencing_order_range:
+                                    for power_exponent in self.power_exponent_range:
+                                        for is_normalized in self.is_normalized_range:
+                                            parameter_combination['number_input_lags'] = number_input_lags
+                                            parameter_combination['number_lstm_units_layer_1'] = \
+                                                number_lstm_units_layer_1
+                                            parameter_combination['number_lstm_units_layer_2'] = \
+                                                number_lstm_units_layer_2
+                                            parameter_combination['number_epochs'] = number_epochs
+                                            parameter_combination['batch_size'] = batch_size
+                                            parameter_combination['differencing_order'] = differencing_order
+                                            parameter_combination['power_exponent'] = power_exponent
+                                            parameter_combination['is_normalized'] = is_normalized
+                                            self.grid_of_parameter_combinations.append(parameter_combination.copy())
 
         return self.grid_of_parameter_combinations

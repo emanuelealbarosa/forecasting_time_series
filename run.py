@@ -80,6 +80,83 @@ if forecasting_method_name == 'RF':
                                'number_trees_range': number_trees_range}
 
 
+"""MLP"""
+# Note: neural methods refit a fresh model on every forecast step, so keep
+# these grids small (few combinations, few epochs) or the search will be slow.
+ 
+if forecasting_method_name == 'MLP':
+    number_input_lags_range = [5, 10]
+    number_hidden_nodes_range = [8, 16]
+    number_epochs_range = [20]
+    batch_size_range = [8]
+    method_parameter_ranges = {'number_input_lags_range': number_input_lags_range,
+                               'number_hidden_nodes_range': number_hidden_nodes_range,
+                               'number_epochs_range': number_epochs_range,
+                               'batch_size_range': batch_size_range}
+ 
+"""CNN"""
+ 
+if forecasting_method_name == 'CNN':
+    number_input_lags_range = [8, 12]
+    number_filters_range = [8, 16]
+    kernel_size_range = [2, 3]
+    number_epochs_range = [20]
+    batch_size_range = [8]
+    method_parameter_ranges = {'number_input_lags_range': number_input_lags_range,
+                               'number_filters_range': number_filters_range,
+                               'kernel_size_range': kernel_size_range,
+                               'number_epochs_range': number_epochs_range,
+                               'batch_size_range': batch_size_range}
+ 
+"""LSTM"""
+ 
+if forecasting_method_name == 'LSTM':
+    number_input_lags_range = [5, 10]
+    number_lstm_units_range = [8, 16]
+    number_epochs_range = [20]
+    batch_size_range = [8]
+    method_parameter_ranges = {'number_input_lags_range': number_input_lags_range,
+                               'number_lstm_units_range': number_lstm_units_range,
+                               'number_epochs_range': number_epochs_range,
+                               'batch_size_range': batch_size_range}
+ 
+"""CNN-LSTM"""
+# number_input_lags must be divisible by number_subsequences.
+ 
+if forecasting_method_name == 'CNN-LSTM':
+    number_input_lags_range = [8, 12] #every value must be divisible by number_subsequences
+    number_subsequences_range = [2]
+    number_filters_range = [8]
+    kernel_size_range = [2]
+    number_lstm_units_range = [8, 16]
+    number_epochs_range = [20]
+    batch_size_range = [8]
+    method_parameter_ranges = {'number_input_lags_range': number_input_lags_range,
+                               'number_subsequences_range': number_subsequences_range,
+                               'number_filters_range': number_filters_range,
+                               'kernel_size_range': kernel_size_range,
+                               'number_lstm_units_range': number_lstm_units_range,
+                               'number_epochs_range': number_epochs_range,
+                               'batch_size_range': batch_size_range}
+ 
+"""ConvLSTM"""
+# number_input_lags must be divisible by number_subsequences.
+ 
+if forecasting_method_name == 'ConvLSTM':
+    number_input_lags_range = [8, 12] #every value must be divisible by number_subsequences
+    number_subsequences_range = [2]
+    number_filters_range = [8]
+    kernel_size_range = [2]
+    number_epochs_range = [20]
+    batch_size_range = [8]
+    method_parameter_ranges = {'number_input_lags_range': number_input_lags_range,
+                               'number_subsequences_range': number_subsequences_range,
+                               'number_filters_range': number_filters_range,
+                               'kernel_size_range': kernel_size_range,
+                               'number_epochs_range': number_epochs_range,
+                               'batch_size_range': batch_size_range}
+ 
+
 ######
 general_parameters = {'outcome_variable': outcome_variable,
                       'time_variable': time_variable,
