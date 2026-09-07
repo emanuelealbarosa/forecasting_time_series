@@ -10,17 +10,15 @@ validation_minimum_training_split = 0.7
 validation_maximum_number_of_steps = 7
 processing_parameters_number = 3
 
-data = pd.DataFrame([[i, 1, 1] for i in range(1, 1000, 2)],
-                    columns=[outcome_variable, time_variable, time_sequence_variable])
-for i in data.index:
-  data['crossings'].values[i] = data['crossings'].values[i]*i
-forecasting_method_name = 'Naive'
+data = pd.read_csv('data_to_forecast.csv')
+
+
 differencing_order_range = [0, 1]
 power_exponent_range = [1, 0.5]
 is_normalized_range = [False, True]
 
 
-forecasting_method_name = 'ARIMA'
+forecasting_method_name = 'RF' #### CHANGE THIS LINE TO TEST DIFFERENT METHODS
 
 
 """Naive"""
@@ -86,8 +84,8 @@ if forecasting_method_name == 'RF':
  
 if forecasting_method_name == 'MLP':
     number_input_lags_range = [5, 10]
-    number_hidden_nodes_range = [8, 16]
-    number_epochs_range = [20]
+    number_hidden_nodes_range = [8, 10]
+    number_epochs_range = [10]
     batch_size_range = [8]
     method_parameter_ranges = {'number_input_lags_range': number_input_lags_range,
                                'number_hidden_nodes_range': number_hidden_nodes_range,
@@ -97,10 +95,10 @@ if forecasting_method_name == 'MLP':
 """CNN"""
  
 if forecasting_method_name == 'CNN':
-    number_input_lags_range = [8, 12]
-    number_filters_range = [8, 16]
+    number_input_lags_range = [8, 10]
+    number_filters_range = [8, 10]
     kernel_size_range = [2, 3]
-    number_epochs_range = [20]
+    number_epochs_range = [10]
     batch_size_range = [8]
     method_parameter_ranges = {'number_input_lags_range': number_input_lags_range,
                                'number_filters_range': number_filters_range,
@@ -111,9 +109,9 @@ if forecasting_method_name == 'CNN':
 """LSTM"""
  
 if forecasting_method_name == 'LSTM':
-    number_input_lags_range = [5, 10]
-    number_lstm_units_range = [8, 16]
-    number_epochs_range = [20]
+    number_input_lags_range = [5, 8]
+    number_lstm_units_range = [8, 10]
+    number_epochs_range = [10]
     batch_size_range = [8]
     method_parameter_ranges = {'number_input_lags_range': number_input_lags_range,
                                'number_lstm_units_range': number_lstm_units_range,
@@ -124,12 +122,12 @@ if forecasting_method_name == 'LSTM':
 # number_input_lags must be divisible by number_subsequences.
  
 if forecasting_method_name == 'CNN-LSTM':
-    number_input_lags_range = [8, 12] #every value must be divisible by number_subsequences
+    number_input_lags_range = [8, 10] #every value must be divisible by number_subsequences
     number_subsequences_range = [2]
     number_filters_range = [8]
     kernel_size_range = [2]
-    number_lstm_units_range = [8, 16]
-    number_epochs_range = [20]
+    number_lstm_units_range = [8, 10]
+    number_epochs_range = [10]
     batch_size_range = [8]
     method_parameter_ranges = {'number_input_lags_range': number_input_lags_range,
                                'number_subsequences_range': number_subsequences_range,
@@ -143,11 +141,11 @@ if forecasting_method_name == 'CNN-LSTM':
 # number_input_lags must be divisible by number_subsequences.
  
 if forecasting_method_name == 'ConvLSTM':
-    number_input_lags_range = [8, 12] #every value must be divisible by number_subsequences
+    number_input_lags_range = [8, 10] #every value must be divisible by number_subsequences
     number_subsequences_range = [2]
     number_filters_range = [8]
     kernel_size_range = [2]
-    number_epochs_range = [20]
+    number_epochs_range = [10]
     batch_size_range = [8]
     method_parameter_ranges = {'number_input_lags_range': number_input_lags_range,
                                'number_subsequences_range': number_subsequences_range,

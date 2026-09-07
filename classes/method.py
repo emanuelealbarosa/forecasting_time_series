@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from classes.methods import naive,ets,arima,rf,mlp,cnn,lstm,cnn_lstm,convlstm,twodlstm
+from classes.methods import naive,ets,arima,rf,mlp,cnn,lstm,cnn_lstm,convlstm
 
 class forecasting_method():
 

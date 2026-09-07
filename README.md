@@ -2,7 +2,7 @@
 
 A small framework for testing and grid-searching a range of forecasting methods on a
 **single univariate time series**. It wraps each method (Naive, ETS, ARIMA, Random
-Forest, plus stubs for MLP/CNN/LSTM variants) in a common interface, runs walk-forward
+Forest, plus some neural network methods) in a common interface, runs walk-forward
 validation across a grid of method and preprocessing parameters, and ranks the
 combinations by forecast error.
 
@@ -21,13 +21,15 @@ methods wired into `classes/method.py` are now implemented:
 - **CNN-LSTM** (`classes/methods/cnn_lstm.py`) — Conv1D reads subsequences, LSTM reads their summaries
 - **ConvLSTM** (`classes/methods/convlstm.py`) — ConvLSTM2D over subsequences
 
-The neural methods (MLP through twoDLSTM) all follow the same refit-every-step
+The neural methods all follow the same refit-every-step
 pattern as ARIMA/RF: `predict()` builds a lagged supervised dataset from the raw
 series, fits a fresh Keras model, and predicts one step ahead. This means a grid
 search over these methods is significantly slower than over Naive/ARIMA/RF — keep
 epoch counts and the parameter grid small unless you're prepared to wait, and
 consider trimming `validation_maximum_number_of_splits` too, since each split refits
 from scratch.
+
+The dataset included in the repository ("data_to_forecast.csv") was downloaded from the website of Frontex. It shows monthly crossings of migrants across all migration route to Europe, from 2009 to mid-2026. If you wish to replace the data, check below for the dataset requirements. 
 
 
 ## Installation
@@ -69,7 +71,7 @@ top 5 parameter combinations ranked by RMSE.
 python run.py
 ```
 
-Swap `forecasting_method_name` in `run.py` to (e.g.) `'Naive'`, `'ETS'`, `'ARIMA'`, or `'RF'` to test a different method (each block above it defines that method's parameter
+Swap `forecasting_method_name` in `run.py` to (e.g.) `'Naive'`, `'ETS'`, `'ARIMA'`,`'RF'`,`'MLP'`,`'CNN'`,`'LSTM'`,`'CNN-LSTM'` or `'ConvLSTM'` to test a different method (each block above it defines that method's parameter
 search ranges).
 
 ### Expected data structure
