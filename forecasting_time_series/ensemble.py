@@ -84,9 +84,64 @@ def distinct_members(ranked, top_n: int) -> list[tuple[int, object]]:
     return chosen
 
 
+def stacked_predictions(results) -> tuple[np.ndarray, np.ndarray] | None:
+    """The validation forecasts of `results` as one array (results x splits x steps) and the actual values
+    (splits x steps), when every split of every result has the same length and the same actual values;
+    else None (then ensembles are scored split by split)."""
+    if not results:
+        return None
+    lengths = {len(split) for result in results for split in result.split_predictions}
+    splits = {len(result.split_predictions) for result in results}
+    if len(lengths) != 1 or len(splits) != 1 or 0 in lengths or 0 in splits:
+        return None
+    if any(len(split) != len(prediction) for result in results
+           for split, prediction in zip(result.split_actuals, result.split_predictions)):
+        return None
+    predictions = np.array([result.split_predictions for result in results], dtype=float)
+    actuals = np.array(results[0].split_actuals, dtype=float)
+    if not all(np.array_equal(np.asarray(r.split_actuals, dtype=float), actuals, equal_nan=True) for r in results):
+        return None
+    return predictions, actuals
+
+
+# the metrics scored for all splits at once (each split along the last axis); others go split by split
+SPLIT_METRICS = {'rmse': lambda errors: np.sqrt(np.mean(errors ** 2, axis=-1)),
+                 'mae': lambda errors: np.mean(np.abs(errors), axis=-1)}
+
+
+def scores_of(predictions: np.ndarray, actuals: np.ndarray, metric: str, score_aggregation: str):
+    """Split scores and the overall score of one candidate's validation forecasts (splits x steps), as
+    metrics.evaluator and aggregate_score would compute them from the per-split lists."""
+    errors = predictions - actuals
+    split_scores = [float(s) for s in SPLIT_METRICS[metric](errors)]
+    if score_aggregation == 'pooled':
+        score = float(SPLIT_METRICS[metric](errors.ravel()))
+    else:
+        score = float({'mean': np.mean, 'median': np.median}[score_aggregation](split_scores))
+    return split_scores, score
+
+
 def evaluate_ensembles(members_available, aggregations, metric: str,
-                       score_aggregation: str) -> list[EnsembleResult]:
-    """Score every ensemble of the given (rank, result) members; best first."""
+                       score_aggregation: str, visit=None) -> list[EnsembleResult]:
+    """Score every ensemble of the given (rank, result) members; best first.
+    With n members there are about 2^n ensembles per aggregation, so when the members' validation
+    forecasts form one array (the usual case) each ensemble is scored on all splits at once.
+    visit: called as visit(members, aggregation, forecasts) with each ensemble's validation forecasts
+    (splits x steps) while they are at hand (BlockSelection scores its blocks this way); only in that
+    usual case, so a caller must check that every ensemble was visited."""
+    stacked = stacked_predictions([result for _, result in members_available])
+    if stacked is not None and metric in SPLIT_METRICS and score_aggregation in ('pooled', 'mean', 'median'):
+        predictions, actuals = stacked
+        results = []
+        for positions, aggregation in candidate_ensembles(len(members_available), aggregations):
+            members = tuple(members_available[p - 1][0] for p in positions)
+            combined = ENSEMBLE_AGGREGATIONS[aggregation](predictions[[p - 1 for p in positions]], axis=0)
+            split_scores, score = scores_of(combined, actuals, metric, score_aggregation)
+            results.append(EnsembleResult(members, aggregation, split_scores, score))
+            if visit is not None:
+                visit(members, aggregation, combined)
+        return _ranked(results)
+
     scorer = metrics.evaluator({'type': metric})
     number_of_splits = len(members_available[0][1].split_scores) if members_available else 0
     results = []
@@ -101,6 +156,10 @@ def evaluate_ensembles(members_available, aggregations, metric: str,
         split_scores = [scorer.score(p, a) for p, a in zip(split_predictions, split_actuals)]
         score = aggregate_score(score_aggregation, metric, split_scores, split_predictions, split_actuals)
         results.append(EnsembleResult(members, aggregation, split_scores, score))
+    return _ranked(results)
+
+
+def _ranked(results: list[EnsembleResult]) -> list[EnsembleResult]:
     order = list(ENSEMBLE_AGGREGATIONS)
     # ties go to smaller ensembles, then to the mean, then to better-ranked members
     return sorted(results, key=lambda r: (float(f'{r.score:.10g}'), r.size,
@@ -173,7 +232,8 @@ class CombinedEnsembles:
         self.number_of_splits: int | None = None
 
     # main
-    def run(self) -> 'CombinedEnsembles':
+    def run(self, visit=None) -> 'CombinedEnsembles':
+        """visit: passed to evaluate_ensembles (each ensemble's validation forecasts, while scored)."""
         self._check_compatible()
         self.number_of_splits = min(e.number_of_splits for e in self.experiments)
         n = self.number_of_splits
@@ -197,7 +257,7 @@ class CombinedEnsembles:
             available = [(position, member.result) for position, member in enumerate(self.members)]
             results += [CombinedResult(e.members, e.aggregation, e.split_scores, e.score)
                         for e in evaluate_ensembles(available, self.aggregations, self.metric,
-                                                    self.score_aggregation)]
+                                                    self.score_aggregation, visit=visit)]
         order = ['single'] + list(ENSEMBLE_AGGREGATIONS)
         # ties go to fewer members, then single → mean → median, then earlier members
         self.results = sorted(results, key=lambda r: (float(f'{r.score:.10g}'), r.size,

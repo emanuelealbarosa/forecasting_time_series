@@ -200,7 +200,11 @@ def combine_runs(directory, run_ids, *, day_blocks: dict | None = SIX_HOUR_BLOCK
     if verbose:
         print(f'Combining {len(experiments)} experiments from {len(sources)} saved runs: {", ".join(names)}\n')
 
-    pool = CombinedEnsembles(experiments, top_n=top_n, aggregations=aggregations).run()
+    pool = CombinedEnsembles(experiments, top_n=top_n, aggregations=aggregations)
+    if day_blocks:  # the block-wise selection ranks the pool, scoring its blocks in the same pass
+        blockwise = BlockSelection(experiments, day_blocks, timezone=timezone, pool=pool).run()
+    else:
+        pool.run()
     if verbose:
         pool.report()
     result = EvaluationResult(test=test, experiments=experiments)
@@ -228,8 +232,6 @@ def combine_runs(directory, run_ids, *, day_blocks: dict | None = SIX_HOUR_BLOCK
     if day_blocks:
         if verbose:
             print()
-        blockwise = BlockSelection(experiments, day_blocks, timezone=timezone, top_n=top_n,
-                                   aggregations=aggregations).run()
         if verbose:
             blockwise.report()
         label = 'Block-wise selection (' + ', '.join(f'{c.block}: {blockwise.label(c.rank)}'

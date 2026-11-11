@@ -108,11 +108,13 @@ def _methods(experiments: dict) -> str:
 
 
 def forecast_combined(experiments: dict[str, ForecastExperiment], data: pd.DataFrame, start: int, horizon: int,
-                  n_jobs: int = 1, verbose: bool = True) -> dict:
+                  n_jobs: int = 1, verbose: bool = True, pool: CombinedEnsembles | None = None) -> dict:
     """The test forecasts of the best combination of the experiments' top members (each experiment's
     ensemble_top_n), alone or combined, within or across experiments, ranked on the validation days they
-    share; one record."""
-    combined = CombinedEnsembles(experiments).run()
+    share; one record. pool: that CombinedEnsembles of the experiments, if already made (run or not)."""
+    combined = pool if pool is not None else CombinedEnsembles(experiments)
+    if not combined.results:
+        combined.run()
     if verbose:
         combined.report()
     best = combined.results[0]
@@ -131,11 +133,11 @@ def forecast_combined(experiments: dict[str, ForecastExperiment], data: pd.DataF
 
 def forecast_blockwise(experiments: dict[str, ForecastExperiment], data: pd.DataFrame, start: int, horizon: int,
                    blocks: dict = SIX_HOUR_BLOCKS, timezone: str | None = None, n_jobs: int = 1,
-                   verbose: bool = True) -> dict:
+                   verbose: bool = True, selection: BlockSelection | None = None) -> dict:
     """The test forecasts of the block-wise selection: each part of the day (blocks: {name: local hours})
     takes the candidate (single or ensemble, from any experiment) that scored best on its own steps of the
-    validation days; one record."""
-    blockwise = BlockSelection(experiments, blocks, timezone=timezone).run()
+    validation days; one record. selection: that BlockSelection, if already run."""
+    blockwise = selection if selection is not None else BlockSelection(experiments, blocks, timezone=timezone).run()
     if verbose:
         blockwise.report()
     label = 'Block-wise selection (' + ', '.join(f'{c.block}: {blockwise.label(c.rank)}'
@@ -205,15 +207,21 @@ def evaluate(experiments: dict[str, Callable[[pd.DataFrame], ForecastExperiment]
             print(f'({name}: {time.perf_counter() - started:.0f}s including the test forecasts)\n')
     _check_compatible(result.experiments)
 
+    # the candidates of both the combination across methods and the block-wise selection, ranked once
+    # (by the block-wise selection, which scores its blocks in the same pass)
+    pool = CombinedEnsembles(result.experiments)
+    selection = BlockSelection(result.experiments, day_blocks, timezone=timezone, pool=pool).run() if day_blocks \
+        else None
     if combine_methods and len(result.experiments) > 1:
         if verbose:
             print('=== All methods ' + '=' * 56)
-        result.records.append(forecast_combined(result.experiments, data, len(train), steps_per_day, n_jobs, verbose))
+        result.records.append(forecast_combined(result.experiments, data, len(train), steps_per_day, n_jobs, verbose,
+                                                pool=pool))
     if day_blocks:
         if verbose:
             print('=== By part of the day ' + '=' * 50)
         result.records.append(forecast_blockwise(result.experiments, data, len(train), steps_per_day, day_blocks,
-                                             timezone, n_jobs, verbose))
+                                             timezone, n_jobs, verbose, selection=selection))
     result.forecasts = {r['model']: r['forecast'] for r in result.records}
     if verbose:
         print()
