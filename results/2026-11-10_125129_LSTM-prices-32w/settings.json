@@ -1,0 +1,365 @@
+{
+  "run_id": "2026-11-10_125129_LSTM-prices-32w",
+  "timestamp": "2026-11-10T12:51:29",
+  "experiments": [
+    "LSTM prices 32w"
+  ],
+  "git_commit": "c66f7f7f1ee04ed22550e7dc35ea1929a540876c",
+  "uncommitted_changes": true,
+  "notes": "",
+  "test_period": {
+    "start": "2026-10-03 00:00",
+    "end": "2026-10-30 23:45",
+    "steps": 2688
+  },
+  "experiment_settings": {
+    "LSTM prices 32w": {
+      "method": "LSTM",
+      "outcome_variable": "price",
+      "inputs": [
+        "dow_mon",
+        "dow_tue",
+        "dow_wed",
+        "dow_thu",
+        "dow_fri",
+        "dow_sat",
+        "dow_sun"
+      ],
+      "method_parameter_ranges": {
+        "steps_per_day": 96,
+        "minimum_calibration_days": 28,
+        "lag_days": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "lag_resolution": "hourly",
+        "exog_lag_days": {},
+        "exog_lag_transform": "asinh",
+        "sequence_known_inputs": true,
+        "lstm_units_range": [
+          32,
+          64
+        ],
+        "lstm_layers": 1,
+        "hidden_layers_range": [
+          []
+        ],
+        "dropout_range": [
+          0.1
+        ],
+        "weight_decay_range": [
+          0.001
+        ],
+        "learning_rate_range": [
+          0.001
+        ],
+        "activation": "relu",
+        "batch_size": 16,
+        "max_epochs": 500,
+        "patience": 30,
+        "validation_days": 14,
+        "refit": true,
+        "n_seeds": 3,
+        "seed": 0
+      },
+      "processing_ranges": {
+        "transform_range": [
+          null
+        ],
+        "decomposition_range": [
+          null
+        ],
+        "differencing_range": [
+          0
+        ],
+        "normalisation_range": [
+          null
+        ]
+      },
+      "training_window_range": [
+        21504
+      ],
+      "forecasting_period": 96,
+      "metric": "rmse",
+      "score_aggregation": "pooled",
+      "validation_splits": 56,
+      "validation_minimum_training_split": 0.7,
+      "validation_maximum_number_of_splits": 56,
+      "ensembles": true,
+      "ensemble_top_n": 3,
+      "ensemble_aggregations": [
+        "mean",
+        "median"
+      ],
+      "training_data": {
+        "rows": 35136,
+        "start": "2025-10-02 00:00",
+        "end": "2026-10-02 23:45"
+      },
+      "combinations_ranked": 2,
+      "combinations_failed": 0
+    }
+  },
+  "models": {
+    "LSTM prices 32w: single #1 (window 21504)": {
+      "method": "LSTM",
+      "method_parameters": {
+        "lag_days": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "lag_resolution": "hourly",
+        "exog_lag_days": {},
+        "exog_lag_transform": "asinh",
+        "steps_per_day": 96,
+        "minimum_calibration_days": 28,
+        "activation": "relu",
+        "batch_size": 16,
+        "max_epochs": 500,
+        "patience": 30,
+        "validation_days": 14,
+        "refit": true,
+        "n_seeds": 3,
+        "seed": 0,
+        "lstm_layers": 1,
+        "sequence_known_inputs": true,
+        "lstm_units": 64,
+        "hidden_layers": [],
+        "dropout": 0.1,
+        "weight_decay": 0.001,
+        "learning_rate": 0.001
+      },
+      "processing_parameters": {
+        "transform": null,
+        "decomposition": null,
+        "differencing": 0,
+        "normalisation": null
+      },
+      "processing": {
+        "transform": "none",
+        "decomposition": "none",
+        "differencing": "none",
+        "normalisation": "none"
+      },
+      "training_window": 21504,
+      "inputs": [
+        "dow_mon",
+        "dow_tue",
+        "dow_wed",
+        "dow_thu",
+        "dow_fri",
+        "dow_sat",
+        "dow_sun"
+      ]
+    },
+    "LSTM prices 32w: single #2 (window 21504)": {
+      "method": "LSTM",
+      "method_parameters": {
+        "lag_days": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "lag_resolution": "hourly",
+        "exog_lag_days": {},
+        "exog_lag_transform": "asinh",
+        "steps_per_day": 96,
+        "minimum_calibration_days": 28,
+        "activation": "relu",
+        "batch_size": 16,
+        "max_epochs": 500,
+        "patience": 30,
+        "validation_days": 14,
+        "refit": true,
+        "n_seeds": 3,
+        "seed": 0,
+        "lstm_layers": 1,
+        "sequence_known_inputs": true,
+        "lstm_units": 32,
+        "hidden_layers": [],
+        "dropout": 0.1,
+        "weight_decay": 0.001,
+        "learning_rate": 0.001
+      },
+      "processing_parameters": {
+        "transform": null,
+        "decomposition": null,
+        "differencing": 0,
+        "normalisation": null
+      },
+      "processing": {
+        "transform": "none",
+        "decomposition": "none",
+        "differencing": "none",
+        "normalisation": "none"
+      },
+      "training_window": 21504,
+      "inputs": [
+        "dow_mon",
+        "dow_tue",
+        "dow_wed",
+        "dow_thu",
+        "dow_fri",
+        "dow_sat",
+        "dow_sun"
+      ]
+    },
+    "LSTM prices 32w: ensemble #1 + #2, mean": {
+      "method": "LSTM",
+      "aggregation": "mean",
+      "member_ranks": [
+        1,
+        2
+      ],
+      "members": [
+        {
+          "method": "LSTM",
+          "method_parameters": {
+            "lag_days": [
+              1,
+              2,
+              3,
+              4,
+              5,
+              6,
+              7
+            ],
+            "lag_resolution": "hourly",
+            "exog_lag_days": {},
+            "exog_lag_transform": "asinh",
+            "steps_per_day": 96,
+            "minimum_calibration_days": 28,
+            "activation": "relu",
+            "batch_size": 16,
+            "max_epochs": 500,
+            "patience": 30,
+            "validation_days": 14,
+            "refit": true,
+            "n_seeds": 3,
+            "seed": 0,
+            "lstm_layers": 1,
+            "sequence_known_inputs": true,
+            "lstm_units": 64,
+            "hidden_layers": [],
+            "dropout": 0.1,
+            "weight_decay": 0.001,
+            "learning_rate": 0.001
+          },
+          "processing_parameters": {
+            "transform": null,
+            "decomposition": null,
+            "differencing": 0,
+            "normalisation": null
+          },
+          "processing": {
+            "transform": "none",
+            "decomposition": "none",
+            "differencing": "none",
+            "normalisation": "none"
+          },
+          "training_window": 21504,
+          "inputs": [
+            "dow_mon",
+            "dow_tue",
+            "dow_wed",
+            "dow_thu",
+            "dow_fri",
+            "dow_sat",
+            "dow_sun"
+          ]
+        },
+        {
+          "method": "LSTM",
+          "method_parameters": {
+            "lag_days": [
+              1,
+              2,
+              3,
+              4,
+              5,
+              6,
+              7
+            ],
+            "lag_resolution": "hourly",
+            "exog_lag_days": {},
+            "exog_lag_transform": "asinh",
+            "steps_per_day": 96,
+            "minimum_calibration_days": 28,
+            "activation": "relu",
+            "batch_size": 16,
+            "max_epochs": 500,
+            "patience": 30,
+            "validation_days": 14,
+            "refit": true,
+            "n_seeds": 3,
+            "seed": 0,
+            "lstm_layers": 1,
+            "sequence_known_inputs": true,
+            "lstm_units": 32,
+            "hidden_layers": [],
+            "dropout": 0.1,
+            "weight_decay": 0.001,
+            "learning_rate": 0.001
+          },
+          "processing_parameters": {
+            "transform": null,
+            "decomposition": null,
+            "differencing": 0,
+            "normalisation": null
+          },
+          "processing": {
+            "transform": "none",
+            "decomposition": "none",
+            "differencing": "none",
+            "normalisation": "none"
+          },
+          "training_window": 21504,
+          "inputs": [
+            "dow_mon",
+            "dow_tue",
+            "dow_wed",
+            "dow_thu",
+            "dow_fri",
+            "dow_sat",
+            "dow_sun"
+          ]
+        }
+      ]
+    },
+    "Block-wise selection (00-05: LSTM prices 32w #1, 06-11: LSTM prices 32w #1 + LSTM prices 32w #2 (mean), 12-17: LSTM prices 32w #1 + LSTM prices 32w #2 (mean), 18-23: LSTM prices 32w #1 + LSTM prices 32w #2 (mean))": {
+      "method": "LSTM",
+      "blocks": [
+        {
+          "block": "00-05",
+          "candidate": "LSTM prices 32w #1"
+        },
+        {
+          "block": "06-11",
+          "candidate": "LSTM prices 32w #1 + LSTM prices 32w #2 (mean)"
+        },
+        {
+          "block": "12-17",
+          "candidate": "LSTM prices 32w #1 + LSTM prices 32w #2 (mean)"
+        },
+        {
+          "block": "18-23",
+          "candidate": "LSTM prices 32w #1 + LSTM prices 32w #2 (mean)"
+        }
+      ]
+    }
+  }
+}

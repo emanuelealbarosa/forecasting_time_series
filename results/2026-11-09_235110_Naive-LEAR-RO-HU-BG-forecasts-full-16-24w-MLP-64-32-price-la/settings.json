@@ -1,0 +1,2466 @@
+{
+  "run_id": "2026-11-09_235110_Naive-LEAR-RO-HU-BG-forecasts-full-16-24w-MLP-64-32-price-la",
+  "timestamp": "2026-11-09T23:51:10",
+  "experiments": [
+    "Naive",
+    "LEAR+RO+HU+BG forecasts full 16-24w",
+    "MLP (64, 32) price lags 1-7 16-32w"
+  ],
+  "git_commit": "c66f7f7f1ee04ed22550e7dc35ea1929a540876c",
+  "uncommitted_changes": true,
+  "notes": "",
+  "test_period": {
+    "start": "2026-10-03 00:00",
+    "end": "2026-10-30 23:45",
+    "steps": 2688
+  },
+  "experiment_settings": {
+    "Naive": {
+      "method": "Naive",
+      "outcome_variable": "price",
+      "inputs": [],
+      "method_parameter_ranges": {
+        "predictors_maximum_length_range": [
+          4
+        ],
+        "predictors_offset_range": [
+          1,
+          96,
+          672
+        ],
+        "average_type_range": [
+          "mean",
+          "median"
+        ]
+      },
+      "processing_ranges": {
+        "transform_range": [
+          null,
+          "sqrt"
+        ],
+        "decomposition_range": [
+          null
+        ],
+        "differencing_range": [
+          0,
+          1
+        ],
+        "normalisation_range": [
+          null
+        ]
+      },
+      "training_window_range": [
+        null
+      ],
+      "forecasting_period": 96,
+      "metric": "rmse",
+      "score_aggregation": "pooled",
+      "validation_splits": 56,
+      "validation_minimum_training_split": 0.7,
+      "validation_maximum_number_of_splits": 56,
+      "ensembles": true,
+      "ensemble_top_n": 5,
+      "ensemble_aggregations": [
+        "mean",
+        "median"
+      ],
+      "training_data": {
+        "rows": 35136,
+        "start": "2025-10-02 00:00",
+        "end": "2026-10-02 23:45"
+      },
+      "combinations_ranked": 96,
+      "combinations_failed": 0
+    },
+    "LEAR+RO+HU+BG forecasts full 16-24w": {
+      "method": "LEAR",
+      "outcome_variable": "price",
+      "inputs": [
+        "dow_mon",
+        "dow_tue",
+        "dow_wed",
+        "dow_thu",
+        "dow_fri",
+        "dow_sat",
+        "dow_sun",
+        "load_RO",
+        "generation_RO",
+        "solar_RO",
+        "load_HU",
+        "generation_HU",
+        "solar_HU",
+        "load_BG",
+        "generation_BG",
+        "solar_BG",
+        "load_actual_RO",
+        "generation_actual_RO",
+        "solar_actual_RO",
+        "load_actual_HU",
+        "generation_actual_HU",
+        "solar_actual_HU"
+      ],
+      "method_parameter_ranges": {
+        "steps_per_day": 96,
+        "minimum_calibration_days": 14,
+        "lag_days": [
+          1,
+          2,
+          3,
+          7
+        ],
+        "lag_resolution": "full",
+        "exog_lag_days": {
+          "load_actual_RO": [
+            2,
+            7
+          ],
+          "generation_actual_RO": [
+            2,
+            7
+          ],
+          "solar_actual_RO": [
+            2,
+            7
+          ],
+          "load_actual_HU": [
+            2,
+            7
+          ],
+          "generation_actual_HU": [
+            2,
+            7
+          ],
+          "solar_actual_HU": [
+            2,
+            7
+          ]
+        },
+        "exog_lag_transform": "asinh",
+        "lag_interactions": [],
+        "penalty_range": [
+          "aic"
+        ]
+      },
+      "processing_ranges": {
+        "transform_range": [
+          null
+        ],
+        "decomposition_range": [
+          null
+        ],
+        "differencing_range": [
+          0
+        ],
+        "normalisation_range": [
+          null
+        ]
+      },
+      "training_window_range": [
+        10752,
+        16128
+      ],
+      "forecasting_period": 96,
+      "metric": "rmse",
+      "score_aggregation": "pooled",
+      "validation_splits": 56,
+      "validation_minimum_training_split": 0.7,
+      "validation_maximum_number_of_splits": 56,
+      "ensembles": true,
+      "ensemble_top_n": 3,
+      "ensemble_aggregations": [
+        "mean",
+        "median"
+      ],
+      "training_data": {
+        "rows": 35136,
+        "start": "2025-10-02 00:00",
+        "end": "2026-10-02 23:45"
+      },
+      "combinations_ranked": 2,
+      "combinations_failed": 0
+    },
+    "MLP (64, 32) price lags 1-7 16-32w": {
+      "method": "MLP",
+      "outcome_variable": "price",
+      "inputs": [
+        "dow_mon",
+        "dow_tue",
+        "dow_wed",
+        "dow_thu",
+        "dow_fri",
+        "dow_sat",
+        "dow_sun",
+        "load_RO",
+        "generation_RO",
+        "solar_RO",
+        "load_HU",
+        "generation_HU",
+        "solar_HU",
+        "load_BG",
+        "generation_BG",
+        "solar_BG",
+        "load_actual_RO",
+        "generation_actual_RO",
+        "solar_actual_RO",
+        "load_actual_HU",
+        "generation_actual_HU",
+        "solar_actual_HU"
+      ],
+      "method_parameter_ranges": {
+        "steps_per_day": 96,
+        "minimum_calibration_days": 28,
+        "lag_days": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "lag_resolution": "hourly",
+        "exog_lag_days": {
+          "load_actual_RO": [
+            2,
+            7
+          ],
+          "generation_actual_RO": [
+            2,
+            7
+          ],
+          "solar_actual_RO": [
+            2,
+            7
+          ],
+          "load_actual_HU": [
+            2,
+            7
+          ],
+          "generation_actual_HU": [
+            2,
+            7
+          ],
+          "solar_actual_HU": [
+            2,
+            7
+          ]
+        },
+        "exog_lag_transform": "asinh",
+        "hidden_layers_range": [
+          [
+            64,
+            32
+          ]
+        ],
+        "dropout_range": [
+          0.1
+        ],
+        "weight_decay_range": [
+          0.001
+        ],
+        "learning_rate_range": [
+          0.001
+        ],
+        "activation": "relu",
+        "batch_size": 16,
+        "max_epochs": 500,
+        "patience": 30,
+        "validation_days": 14,
+        "refit": true,
+        "n_seeds": 3,
+        "seed": 0
+      },
+      "processing_ranges": {
+        "transform_range": [
+          null
+        ],
+        "decomposition_range": [
+          null
+        ],
+        "differencing_range": [
+          0
+        ],
+        "normalisation_range": [
+          null
+        ]
+      },
+      "training_window_range": [
+        10752,
+        16128,
+        21504
+      ],
+      "forecasting_period": 96,
+      "metric": "rmse",
+      "score_aggregation": "pooled",
+      "validation_splits": 56,
+      "validation_minimum_training_split": 0.7,
+      "validation_maximum_number_of_splits": 56,
+      "ensembles": true,
+      "ensemble_top_n": 3,
+      "ensemble_aggregations": [
+        "mean",
+        "median"
+      ],
+      "training_data": {
+        "rows": 35136,
+        "start": "2025-10-02 00:00",
+        "end": "2026-10-02 23:45"
+      },
+      "combinations_ranked": 3,
+      "combinations_failed": 0
+    }
+  },
+  "models": {
+    "LEAR+RO+HU+BG forecasts full 16-24w: single #1 (window 16128)": {
+      "method": "LEAR",
+      "method_parameters": {
+        "lag_days": [
+          1,
+          2,
+          3,
+          7
+        ],
+        "lag_resolution": "full",
+        "exog_lag_days": {
+          "load_actual_RO": [
+            2,
+            7
+          ],
+          "generation_actual_RO": [
+            2,
+            7
+          ],
+          "solar_actual_RO": [
+            2,
+            7
+          ],
+          "load_actual_HU": [
+            2,
+            7
+          ],
+          "generation_actual_HU": [
+            2,
+            7
+          ],
+          "solar_actual_HU": [
+            2,
+            7
+          ]
+        },
+        "exog_lag_transform": "asinh",
+        "lag_interactions": [],
+        "penalty": "aic",
+        "steps_per_day": 96,
+        "minimum_calibration_days": 14
+      },
+      "processing_parameters": {
+        "transform": null,
+        "decomposition": null,
+        "differencing": 0,
+        "normalisation": null
+      },
+      "processing": {
+        "transform": "none",
+        "decomposition": "none",
+        "differencing": "none",
+        "normalisation": "none"
+      },
+      "training_window": 16128,
+      "inputs": [
+        "dow_mon",
+        "dow_tue",
+        "dow_wed",
+        "dow_thu",
+        "dow_fri",
+        "dow_sat",
+        "dow_sun",
+        "load_RO",
+        "generation_RO",
+        "solar_RO",
+        "load_HU",
+        "generation_HU",
+        "solar_HU",
+        "load_BG",
+        "generation_BG",
+        "solar_BG",
+        "load_actual_RO",
+        "generation_actual_RO",
+        "solar_actual_RO",
+        "load_actual_HU",
+        "generation_actual_HU",
+        "solar_actual_HU"
+      ]
+    },
+    "LEAR+RO+HU+BG forecasts full 16-24w: single #2 (window 10752)": {
+      "method": "LEAR",
+      "method_parameters": {
+        "lag_days": [
+          1,
+          2,
+          3,
+          7
+        ],
+        "lag_resolution": "full",
+        "exog_lag_days": {
+          "load_actual_RO": [
+            2,
+            7
+          ],
+          "generation_actual_RO": [
+            2,
+            7
+          ],
+          "solar_actual_RO": [
+            2,
+            7
+          ],
+          "load_actual_HU": [
+            2,
+            7
+          ],
+          "generation_actual_HU": [
+            2,
+            7
+          ],
+          "solar_actual_HU": [
+            2,
+            7
+          ]
+        },
+        "exog_lag_transform": "asinh",
+        "lag_interactions": [],
+        "penalty": "aic",
+        "steps_per_day": 96,
+        "minimum_calibration_days": 14
+      },
+      "processing_parameters": {
+        "transform": null,
+        "decomposition": null,
+        "differencing": 0,
+        "normalisation": null
+      },
+      "processing": {
+        "transform": "none",
+        "decomposition": "none",
+        "differencing": "none",
+        "normalisation": "none"
+      },
+      "training_window": 10752,
+      "inputs": [
+        "dow_mon",
+        "dow_tue",
+        "dow_wed",
+        "dow_thu",
+        "dow_fri",
+        "dow_sat",
+        "dow_sun",
+        "load_RO",
+        "generation_RO",
+        "solar_RO",
+        "load_HU",
+        "generation_HU",
+        "solar_HU",
+        "load_BG",
+        "generation_BG",
+        "solar_BG",
+        "load_actual_RO",
+        "generation_actual_RO",
+        "solar_actual_RO",
+        "load_actual_HU",
+        "generation_actual_HU",
+        "solar_actual_HU"
+      ]
+    },
+    "LEAR+RO+HU+BG forecasts full 16-24w: ensemble #1 + #2, mean": {
+      "method": "LEAR",
+      "aggregation": "mean",
+      "member_ranks": [
+        1,
+        2
+      ],
+      "members": [
+        {
+          "method": "LEAR",
+          "method_parameters": {
+            "lag_days": [
+              1,
+              2,
+              3,
+              7
+            ],
+            "lag_resolution": "full",
+            "exog_lag_days": {
+              "load_actual_RO": [
+                2,
+                7
+              ],
+              "generation_actual_RO": [
+                2,
+                7
+              ],
+              "solar_actual_RO": [
+                2,
+                7
+              ],
+              "load_actual_HU": [
+                2,
+                7
+              ],
+              "generation_actual_HU": [
+                2,
+                7
+              ],
+              "solar_actual_HU": [
+                2,
+                7
+              ]
+            },
+            "exog_lag_transform": "asinh",
+            "lag_interactions": [],
+            "penalty": "aic",
+            "steps_per_day": 96,
+            "minimum_calibration_days": 14
+          },
+          "processing_parameters": {
+            "transform": null,
+            "decomposition": null,
+            "differencing": 0,
+            "normalisation": null
+          },
+          "processing": {
+            "transform": "none",
+            "decomposition": "none",
+            "differencing": "none",
+            "normalisation": "none"
+          },
+          "training_window": 16128,
+          "inputs": [
+            "dow_mon",
+            "dow_tue",
+            "dow_wed",
+            "dow_thu",
+            "dow_fri",
+            "dow_sat",
+            "dow_sun",
+            "load_RO",
+            "generation_RO",
+            "solar_RO",
+            "load_HU",
+            "generation_HU",
+            "solar_HU",
+            "load_BG",
+            "generation_BG",
+            "solar_BG",
+            "load_actual_RO",
+            "generation_actual_RO",
+            "solar_actual_RO",
+            "load_actual_HU",
+            "generation_actual_HU",
+            "solar_actual_HU"
+          ]
+        },
+        {
+          "method": "LEAR",
+          "method_parameters": {
+            "lag_days": [
+              1,
+              2,
+              3,
+              7
+            ],
+            "lag_resolution": "full",
+            "exog_lag_days": {
+              "load_actual_RO": [
+                2,
+                7
+              ],
+              "generation_actual_RO": [
+                2,
+                7
+              ],
+              "solar_actual_RO": [
+                2,
+                7
+              ],
+              "load_actual_HU": [
+                2,
+                7
+              ],
+              "generation_actual_HU": [
+                2,
+                7
+              ],
+              "solar_actual_HU": [
+                2,
+                7
+              ]
+            },
+            "exog_lag_transform": "asinh",
+            "lag_interactions": [],
+            "penalty": "aic",
+            "steps_per_day": 96,
+            "minimum_calibration_days": 14
+          },
+          "processing_parameters": {
+            "transform": null,
+            "decomposition": null,
+            "differencing": 0,
+            "normalisation": null
+          },
+          "processing": {
+            "transform": "none",
+            "decomposition": "none",
+            "differencing": "none",
+            "normalisation": "none"
+          },
+          "training_window": 10752,
+          "inputs": [
+            "dow_mon",
+            "dow_tue",
+            "dow_wed",
+            "dow_thu",
+            "dow_fri",
+            "dow_sat",
+            "dow_sun",
+            "load_RO",
+            "generation_RO",
+            "solar_RO",
+            "load_HU",
+            "generation_HU",
+            "solar_HU",
+            "load_BG",
+            "generation_BG",
+            "solar_BG",
+            "load_actual_RO",
+            "generation_actual_RO",
+            "solar_actual_RO",
+            "load_actual_HU",
+            "generation_actual_HU",
+            "solar_actual_HU"
+          ]
+        }
+      ]
+    },
+    "MLP (64, 32) price lags 1-7 16-32w: single #1 (window 10752)": {
+      "method": "MLP",
+      "method_parameters": {
+        "lag_days": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "lag_resolution": "hourly",
+        "exog_lag_days": {
+          "load_actual_RO": [
+            2,
+            7
+          ],
+          "generation_actual_RO": [
+            2,
+            7
+          ],
+          "solar_actual_RO": [
+            2,
+            7
+          ],
+          "load_actual_HU": [
+            2,
+            7
+          ],
+          "generation_actual_HU": [
+            2,
+            7
+          ],
+          "solar_actual_HU": [
+            2,
+            7
+          ]
+        },
+        "exog_lag_transform": "asinh",
+        "steps_per_day": 96,
+        "minimum_calibration_days": 28,
+        "activation": "relu",
+        "batch_size": 16,
+        "max_epochs": 500,
+        "patience": 30,
+        "validation_days": 14,
+        "refit": true,
+        "n_seeds": 3,
+        "seed": 0,
+        "hidden_layers": [
+          64,
+          32
+        ],
+        "dropout": 0.1,
+        "weight_decay": 0.001,
+        "learning_rate": 0.001
+      },
+      "processing_parameters": {
+        "transform": null,
+        "decomposition": null,
+        "differencing": 0,
+        "normalisation": null
+      },
+      "processing": {
+        "transform": "none",
+        "decomposition": "none",
+        "differencing": "none",
+        "normalisation": "none"
+      },
+      "training_window": 10752,
+      "inputs": [
+        "dow_mon",
+        "dow_tue",
+        "dow_wed",
+        "dow_thu",
+        "dow_fri",
+        "dow_sat",
+        "dow_sun",
+        "load_RO",
+        "generation_RO",
+        "solar_RO",
+        "load_HU",
+        "generation_HU",
+        "solar_HU",
+        "load_BG",
+        "generation_BG",
+        "solar_BG",
+        "load_actual_RO",
+        "generation_actual_RO",
+        "solar_actual_RO",
+        "load_actual_HU",
+        "generation_actual_HU",
+        "solar_actual_HU"
+      ]
+    },
+    "MLP (64, 32) price lags 1-7 16-32w: single #2 (window 21504)": {
+      "method": "MLP",
+      "method_parameters": {
+        "lag_days": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "lag_resolution": "hourly",
+        "exog_lag_days": {
+          "load_actual_RO": [
+            2,
+            7
+          ],
+          "generation_actual_RO": [
+            2,
+            7
+          ],
+          "solar_actual_RO": [
+            2,
+            7
+          ],
+          "load_actual_HU": [
+            2,
+            7
+          ],
+          "generation_actual_HU": [
+            2,
+            7
+          ],
+          "solar_actual_HU": [
+            2,
+            7
+          ]
+        },
+        "exog_lag_transform": "asinh",
+        "steps_per_day": 96,
+        "minimum_calibration_days": 28,
+        "activation": "relu",
+        "batch_size": 16,
+        "max_epochs": 500,
+        "patience": 30,
+        "validation_days": 14,
+        "refit": true,
+        "n_seeds": 3,
+        "seed": 0,
+        "hidden_layers": [
+          64,
+          32
+        ],
+        "dropout": 0.1,
+        "weight_decay": 0.001,
+        "learning_rate": 0.001
+      },
+      "processing_parameters": {
+        "transform": null,
+        "decomposition": null,
+        "differencing": 0,
+        "normalisation": null
+      },
+      "processing": {
+        "transform": "none",
+        "decomposition": "none",
+        "differencing": "none",
+        "normalisation": "none"
+      },
+      "training_window": 21504,
+      "inputs": [
+        "dow_mon",
+        "dow_tue",
+        "dow_wed",
+        "dow_thu",
+        "dow_fri",
+        "dow_sat",
+        "dow_sun",
+        "load_RO",
+        "generation_RO",
+        "solar_RO",
+        "load_HU",
+        "generation_HU",
+        "solar_HU",
+        "load_BG",
+        "generation_BG",
+        "solar_BG",
+        "load_actual_RO",
+        "generation_actual_RO",
+        "solar_actual_RO",
+        "load_actual_HU",
+        "generation_actual_HU",
+        "solar_actual_HU"
+      ]
+    },
+    "MLP (64, 32) price lags 1-7 16-32w: single #3 (window 16128)": {
+      "method": "MLP",
+      "method_parameters": {
+        "lag_days": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "lag_resolution": "hourly",
+        "exog_lag_days": {
+          "load_actual_RO": [
+            2,
+            7
+          ],
+          "generation_actual_RO": [
+            2,
+            7
+          ],
+          "solar_actual_RO": [
+            2,
+            7
+          ],
+          "load_actual_HU": [
+            2,
+            7
+          ],
+          "generation_actual_HU": [
+            2,
+            7
+          ],
+          "solar_actual_HU": [
+            2,
+            7
+          ]
+        },
+        "exog_lag_transform": "asinh",
+        "steps_per_day": 96,
+        "minimum_calibration_days": 28,
+        "activation": "relu",
+        "batch_size": 16,
+        "max_epochs": 500,
+        "patience": 30,
+        "validation_days": 14,
+        "refit": true,
+        "n_seeds": 3,
+        "seed": 0,
+        "hidden_layers": [
+          64,
+          32
+        ],
+        "dropout": 0.1,
+        "weight_decay": 0.001,
+        "learning_rate": 0.001
+      },
+      "processing_parameters": {
+        "transform": null,
+        "decomposition": null,
+        "differencing": 0,
+        "normalisation": null
+      },
+      "processing": {
+        "transform": "none",
+        "decomposition": "none",
+        "differencing": "none",
+        "normalisation": "none"
+      },
+      "training_window": 16128,
+      "inputs": [
+        "dow_mon",
+        "dow_tue",
+        "dow_wed",
+        "dow_thu",
+        "dow_fri",
+        "dow_sat",
+        "dow_sun",
+        "load_RO",
+        "generation_RO",
+        "solar_RO",
+        "load_HU",
+        "generation_HU",
+        "solar_HU",
+        "load_BG",
+        "generation_BG",
+        "solar_BG",
+        "load_actual_RO",
+        "generation_actual_RO",
+        "solar_actual_RO",
+        "load_actual_HU",
+        "generation_actual_HU",
+        "solar_actual_HU"
+      ]
+    },
+    "MLP (64, 32) price lags 1-7 16-32w: ensemble #1 + #2, mean": {
+      "method": "MLP",
+      "aggregation": "mean",
+      "member_ranks": [
+        1,
+        2
+      ],
+      "members": [
+        {
+          "method": "MLP",
+          "method_parameters": {
+            "lag_days": [
+              1,
+              2,
+              3,
+              4,
+              5,
+              6,
+              7
+            ],
+            "lag_resolution": "hourly",
+            "exog_lag_days": {
+              "load_actual_RO": [
+                2,
+                7
+              ],
+              "generation_actual_RO": [
+                2,
+                7
+              ],
+              "solar_actual_RO": [
+                2,
+                7
+              ],
+              "load_actual_HU": [
+                2,
+                7
+              ],
+              "generation_actual_HU": [
+                2,
+                7
+              ],
+              "solar_actual_HU": [
+                2,
+                7
+              ]
+            },
+            "exog_lag_transform": "asinh",
+            "steps_per_day": 96,
+            "minimum_calibration_days": 28,
+            "activation": "relu",
+            "batch_size": 16,
+            "max_epochs": 500,
+            "patience": 30,
+            "validation_days": 14,
+            "refit": true,
+            "n_seeds": 3,
+            "seed": 0,
+            "hidden_layers": [
+              64,
+              32
+            ],
+            "dropout": 0.1,
+            "weight_decay": 0.001,
+            "learning_rate": 0.001
+          },
+          "processing_parameters": {
+            "transform": null,
+            "decomposition": null,
+            "differencing": 0,
+            "normalisation": null
+          },
+          "processing": {
+            "transform": "none",
+            "decomposition": "none",
+            "differencing": "none",
+            "normalisation": "none"
+          },
+          "training_window": 10752,
+          "inputs": [
+            "dow_mon",
+            "dow_tue",
+            "dow_wed",
+            "dow_thu",
+            "dow_fri",
+            "dow_sat",
+            "dow_sun",
+            "load_RO",
+            "generation_RO",
+            "solar_RO",
+            "load_HU",
+            "generation_HU",
+            "solar_HU",
+            "load_BG",
+            "generation_BG",
+            "solar_BG",
+            "load_actual_RO",
+            "generation_actual_RO",
+            "solar_actual_RO",
+            "load_actual_HU",
+            "generation_actual_HU",
+            "solar_actual_HU"
+          ]
+        },
+        {
+          "method": "MLP",
+          "method_parameters": {
+            "lag_days": [
+              1,
+              2,
+              3,
+              4,
+              5,
+              6,
+              7
+            ],
+            "lag_resolution": "hourly",
+            "exog_lag_days": {
+              "load_actual_RO": [
+                2,
+                7
+              ],
+              "generation_actual_RO": [
+                2,
+                7
+              ],
+              "solar_actual_RO": [
+                2,
+                7
+              ],
+              "load_actual_HU": [
+                2,
+                7
+              ],
+              "generation_actual_HU": [
+                2,
+                7
+              ],
+              "solar_actual_HU": [
+                2,
+                7
+              ]
+            },
+            "exog_lag_transform": "asinh",
+            "steps_per_day": 96,
+            "minimum_calibration_days": 28,
+            "activation": "relu",
+            "batch_size": 16,
+            "max_epochs": 500,
+            "patience": 30,
+            "validation_days": 14,
+            "refit": true,
+            "n_seeds": 3,
+            "seed": 0,
+            "hidden_layers": [
+              64,
+              32
+            ],
+            "dropout": 0.1,
+            "weight_decay": 0.001,
+            "learning_rate": 0.001
+          },
+          "processing_parameters": {
+            "transform": null,
+            "decomposition": null,
+            "differencing": 0,
+            "normalisation": null
+          },
+          "processing": {
+            "transform": "none",
+            "decomposition": "none",
+            "differencing": "none",
+            "normalisation": "none"
+          },
+          "training_window": 21504,
+          "inputs": [
+            "dow_mon",
+            "dow_tue",
+            "dow_wed",
+            "dow_thu",
+            "dow_fri",
+            "dow_sat",
+            "dow_sun",
+            "load_RO",
+            "generation_RO",
+            "solar_RO",
+            "load_HU",
+            "generation_HU",
+            "solar_HU",
+            "load_BG",
+            "generation_BG",
+            "solar_BG",
+            "load_actual_RO",
+            "generation_actual_RO",
+            "solar_actual_RO",
+            "load_actual_HU",
+            "generation_actual_HU",
+            "solar_actual_HU"
+          ]
+        }
+      ]
+    },
+    "MLP (64, 32) price lags 1-7 16-32w: ensemble #1 + #2 + #3, mean": {
+      "method": "MLP",
+      "aggregation": "mean",
+      "member_ranks": [
+        1,
+        2,
+        3
+      ],
+      "members": [
+        {
+          "method": "MLP",
+          "method_parameters": {
+            "lag_days": [
+              1,
+              2,
+              3,
+              4,
+              5,
+              6,
+              7
+            ],
+            "lag_resolution": "hourly",
+            "exog_lag_days": {
+              "load_actual_RO": [
+                2,
+                7
+              ],
+              "generation_actual_RO": [
+                2,
+                7
+              ],
+              "solar_actual_RO": [
+                2,
+                7
+              ],
+              "load_actual_HU": [
+                2,
+                7
+              ],
+              "generation_actual_HU": [
+                2,
+                7
+              ],
+              "solar_actual_HU": [
+                2,
+                7
+              ]
+            },
+            "exog_lag_transform": "asinh",
+            "steps_per_day": 96,
+            "minimum_calibration_days": 28,
+            "activation": "relu",
+            "batch_size": 16,
+            "max_epochs": 500,
+            "patience": 30,
+            "validation_days": 14,
+            "refit": true,
+            "n_seeds": 3,
+            "seed": 0,
+            "hidden_layers": [
+              64,
+              32
+            ],
+            "dropout": 0.1,
+            "weight_decay": 0.001,
+            "learning_rate": 0.001
+          },
+          "processing_parameters": {
+            "transform": null,
+            "decomposition": null,
+            "differencing": 0,
+            "normalisation": null
+          },
+          "processing": {
+            "transform": "none",
+            "decomposition": "none",
+            "differencing": "none",
+            "normalisation": "none"
+          },
+          "training_window": 10752,
+          "inputs": [
+            "dow_mon",
+            "dow_tue",
+            "dow_wed",
+            "dow_thu",
+            "dow_fri",
+            "dow_sat",
+            "dow_sun",
+            "load_RO",
+            "generation_RO",
+            "solar_RO",
+            "load_HU",
+            "generation_HU",
+            "solar_HU",
+            "load_BG",
+            "generation_BG",
+            "solar_BG",
+            "load_actual_RO",
+            "generation_actual_RO",
+            "solar_actual_RO",
+            "load_actual_HU",
+            "generation_actual_HU",
+            "solar_actual_HU"
+          ]
+        },
+        {
+          "method": "MLP",
+          "method_parameters": {
+            "lag_days": [
+              1,
+              2,
+              3,
+              4,
+              5,
+              6,
+              7
+            ],
+            "lag_resolution": "hourly",
+            "exog_lag_days": {
+              "load_actual_RO": [
+                2,
+                7
+              ],
+              "generation_actual_RO": [
+                2,
+                7
+              ],
+              "solar_actual_RO": [
+                2,
+                7
+              ],
+              "load_actual_HU": [
+                2,
+                7
+              ],
+              "generation_actual_HU": [
+                2,
+                7
+              ],
+              "solar_actual_HU": [
+                2,
+                7
+              ]
+            },
+            "exog_lag_transform": "asinh",
+            "steps_per_day": 96,
+            "minimum_calibration_days": 28,
+            "activation": "relu",
+            "batch_size": 16,
+            "max_epochs": 500,
+            "patience": 30,
+            "validation_days": 14,
+            "refit": true,
+            "n_seeds": 3,
+            "seed": 0,
+            "hidden_layers": [
+              64,
+              32
+            ],
+            "dropout": 0.1,
+            "weight_decay": 0.001,
+            "learning_rate": 0.001
+          },
+          "processing_parameters": {
+            "transform": null,
+            "decomposition": null,
+            "differencing": 0,
+            "normalisation": null
+          },
+          "processing": {
+            "transform": "none",
+            "decomposition": "none",
+            "differencing": "none",
+            "normalisation": "none"
+          },
+          "training_window": 21504,
+          "inputs": [
+            "dow_mon",
+            "dow_tue",
+            "dow_wed",
+            "dow_thu",
+            "dow_fri",
+            "dow_sat",
+            "dow_sun",
+            "load_RO",
+            "generation_RO",
+            "solar_RO",
+            "load_HU",
+            "generation_HU",
+            "solar_HU",
+            "load_BG",
+            "generation_BG",
+            "solar_BG",
+            "load_actual_RO",
+            "generation_actual_RO",
+            "solar_actual_RO",
+            "load_actual_HU",
+            "generation_actual_HU",
+            "solar_actual_HU"
+          ]
+        },
+        {
+          "method": "MLP",
+          "method_parameters": {
+            "lag_days": [
+              1,
+              2,
+              3,
+              4,
+              5,
+              6,
+              7
+            ],
+            "lag_resolution": "hourly",
+            "exog_lag_days": {
+              "load_actual_RO": [
+                2,
+                7
+              ],
+              "generation_actual_RO": [
+                2,
+                7
+              ],
+              "solar_actual_RO": [
+                2,
+                7
+              ],
+              "load_actual_HU": [
+                2,
+                7
+              ],
+              "generation_actual_HU": [
+                2,
+                7
+              ],
+              "solar_actual_HU": [
+                2,
+                7
+              ]
+            },
+            "exog_lag_transform": "asinh",
+            "steps_per_day": 96,
+            "minimum_calibration_days": 28,
+            "activation": "relu",
+            "batch_size": 16,
+            "max_epochs": 500,
+            "patience": 30,
+            "validation_days": 14,
+            "refit": true,
+            "n_seeds": 3,
+            "seed": 0,
+            "hidden_layers": [
+              64,
+              32
+            ],
+            "dropout": 0.1,
+            "weight_decay": 0.001,
+            "learning_rate": 0.001
+          },
+          "processing_parameters": {
+            "transform": null,
+            "decomposition": null,
+            "differencing": 0,
+            "normalisation": null
+          },
+          "processing": {
+            "transform": "none",
+            "decomposition": "none",
+            "differencing": "none",
+            "normalisation": "none"
+          },
+          "training_window": 16128,
+          "inputs": [
+            "dow_mon",
+            "dow_tue",
+            "dow_wed",
+            "dow_thu",
+            "dow_fri",
+            "dow_sat",
+            "dow_sun",
+            "load_RO",
+            "generation_RO",
+            "solar_RO",
+            "load_HU",
+            "generation_HU",
+            "solar_HU",
+            "load_BG",
+            "generation_BG",
+            "solar_BG",
+            "load_actual_RO",
+            "generation_actual_RO",
+            "solar_actual_RO",
+            "load_actual_HU",
+            "generation_actual_HU",
+            "solar_actual_HU"
+          ]
+        }
+      ]
+    },
+    "MLP (64, 32) price lags 1-7 16-32w: ensemble #1 + #2 + #3, median": {
+      "method": "MLP",
+      "aggregation": "median",
+      "member_ranks": [
+        1,
+        2,
+        3
+      ],
+      "members": [
+        {
+          "method": "MLP",
+          "method_parameters": {
+            "lag_days": [
+              1,
+              2,
+              3,
+              4,
+              5,
+              6,
+              7
+            ],
+            "lag_resolution": "hourly",
+            "exog_lag_days": {
+              "load_actual_RO": [
+                2,
+                7
+              ],
+              "generation_actual_RO": [
+                2,
+                7
+              ],
+              "solar_actual_RO": [
+                2,
+                7
+              ],
+              "load_actual_HU": [
+                2,
+                7
+              ],
+              "generation_actual_HU": [
+                2,
+                7
+              ],
+              "solar_actual_HU": [
+                2,
+                7
+              ]
+            },
+            "exog_lag_transform": "asinh",
+            "steps_per_day": 96,
+            "minimum_calibration_days": 28,
+            "activation": "relu",
+            "batch_size": 16,
+            "max_epochs": 500,
+            "patience": 30,
+            "validation_days": 14,
+            "refit": true,
+            "n_seeds": 3,
+            "seed": 0,
+            "hidden_layers": [
+              64,
+              32
+            ],
+            "dropout": 0.1,
+            "weight_decay": 0.001,
+            "learning_rate": 0.001
+          },
+          "processing_parameters": {
+            "transform": null,
+            "decomposition": null,
+            "differencing": 0,
+            "normalisation": null
+          },
+          "processing": {
+            "transform": "none",
+            "decomposition": "none",
+            "differencing": "none",
+            "normalisation": "none"
+          },
+          "training_window": 10752,
+          "inputs": [
+            "dow_mon",
+            "dow_tue",
+            "dow_wed",
+            "dow_thu",
+            "dow_fri",
+            "dow_sat",
+            "dow_sun",
+            "load_RO",
+            "generation_RO",
+            "solar_RO",
+            "load_HU",
+            "generation_HU",
+            "solar_HU",
+            "load_BG",
+            "generation_BG",
+            "solar_BG",
+            "load_actual_RO",
+            "generation_actual_RO",
+            "solar_actual_RO",
+            "load_actual_HU",
+            "generation_actual_HU",
+            "solar_actual_HU"
+          ]
+        },
+        {
+          "method": "MLP",
+          "method_parameters": {
+            "lag_days": [
+              1,
+              2,
+              3,
+              4,
+              5,
+              6,
+              7
+            ],
+            "lag_resolution": "hourly",
+            "exog_lag_days": {
+              "load_actual_RO": [
+                2,
+                7
+              ],
+              "generation_actual_RO": [
+                2,
+                7
+              ],
+              "solar_actual_RO": [
+                2,
+                7
+              ],
+              "load_actual_HU": [
+                2,
+                7
+              ],
+              "generation_actual_HU": [
+                2,
+                7
+              ],
+              "solar_actual_HU": [
+                2,
+                7
+              ]
+            },
+            "exog_lag_transform": "asinh",
+            "steps_per_day": 96,
+            "minimum_calibration_days": 28,
+            "activation": "relu",
+            "batch_size": 16,
+            "max_epochs": 500,
+            "patience": 30,
+            "validation_days": 14,
+            "refit": true,
+            "n_seeds": 3,
+            "seed": 0,
+            "hidden_layers": [
+              64,
+              32
+            ],
+            "dropout": 0.1,
+            "weight_decay": 0.001,
+            "learning_rate": 0.001
+          },
+          "processing_parameters": {
+            "transform": null,
+            "decomposition": null,
+            "differencing": 0,
+            "normalisation": null
+          },
+          "processing": {
+            "transform": "none",
+            "decomposition": "none",
+            "differencing": "none",
+            "normalisation": "none"
+          },
+          "training_window": 21504,
+          "inputs": [
+            "dow_mon",
+            "dow_tue",
+            "dow_wed",
+            "dow_thu",
+            "dow_fri",
+            "dow_sat",
+            "dow_sun",
+            "load_RO",
+            "generation_RO",
+            "solar_RO",
+            "load_HU",
+            "generation_HU",
+            "solar_HU",
+            "load_BG",
+            "generation_BG",
+            "solar_BG",
+            "load_actual_RO",
+            "generation_actual_RO",
+            "solar_actual_RO",
+            "load_actual_HU",
+            "generation_actual_HU",
+            "solar_actual_HU"
+          ]
+        },
+        {
+          "method": "MLP",
+          "method_parameters": {
+            "lag_days": [
+              1,
+              2,
+              3,
+              4,
+              5,
+              6,
+              7
+            ],
+            "lag_resolution": "hourly",
+            "exog_lag_days": {
+              "load_actual_RO": [
+                2,
+                7
+              ],
+              "generation_actual_RO": [
+                2,
+                7
+              ],
+              "solar_actual_RO": [
+                2,
+                7
+              ],
+              "load_actual_HU": [
+                2,
+                7
+              ],
+              "generation_actual_HU": [
+                2,
+                7
+              ],
+              "solar_actual_HU": [
+                2,
+                7
+              ]
+            },
+            "exog_lag_transform": "asinh",
+            "steps_per_day": 96,
+            "minimum_calibration_days": 28,
+            "activation": "relu",
+            "batch_size": 16,
+            "max_epochs": 500,
+            "patience": 30,
+            "validation_days": 14,
+            "refit": true,
+            "n_seeds": 3,
+            "seed": 0,
+            "hidden_layers": [
+              64,
+              32
+            ],
+            "dropout": 0.1,
+            "weight_decay": 0.001,
+            "learning_rate": 0.001
+          },
+          "processing_parameters": {
+            "transform": null,
+            "decomposition": null,
+            "differencing": 0,
+            "normalisation": null
+          },
+          "processing": {
+            "transform": "none",
+            "decomposition": "none",
+            "differencing": "none",
+            "normalisation": "none"
+          },
+          "training_window": 16128,
+          "inputs": [
+            "dow_mon",
+            "dow_tue",
+            "dow_wed",
+            "dow_thu",
+            "dow_fri",
+            "dow_sat",
+            "dow_sun",
+            "load_RO",
+            "generation_RO",
+            "solar_RO",
+            "load_HU",
+            "generation_HU",
+            "solar_HU",
+            "load_BG",
+            "generation_BG",
+            "solar_BG",
+            "load_actual_RO",
+            "generation_actual_RO",
+            "solar_actual_RO",
+            "load_actual_HU",
+            "generation_actual_HU",
+            "solar_actual_HU"
+          ]
+        }
+      ]
+    },
+    "MLP (64, 32) price lags 1-7 16-32w: ensemble #1 + #3, mean": {
+      "method": "MLP",
+      "aggregation": "mean",
+      "member_ranks": [
+        1,
+        3
+      ],
+      "members": [
+        {
+          "method": "MLP",
+          "method_parameters": {
+            "lag_days": [
+              1,
+              2,
+              3,
+              4,
+              5,
+              6,
+              7
+            ],
+            "lag_resolution": "hourly",
+            "exog_lag_days": {
+              "load_actual_RO": [
+                2,
+                7
+              ],
+              "generation_actual_RO": [
+                2,
+                7
+              ],
+              "solar_actual_RO": [
+                2,
+                7
+              ],
+              "load_actual_HU": [
+                2,
+                7
+              ],
+              "generation_actual_HU": [
+                2,
+                7
+              ],
+              "solar_actual_HU": [
+                2,
+                7
+              ]
+            },
+            "exog_lag_transform": "asinh",
+            "steps_per_day": 96,
+            "minimum_calibration_days": 28,
+            "activation": "relu",
+            "batch_size": 16,
+            "max_epochs": 500,
+            "patience": 30,
+            "validation_days": 14,
+            "refit": true,
+            "n_seeds": 3,
+            "seed": 0,
+            "hidden_layers": [
+              64,
+              32
+            ],
+            "dropout": 0.1,
+            "weight_decay": 0.001,
+            "learning_rate": 0.001
+          },
+          "processing_parameters": {
+            "transform": null,
+            "decomposition": null,
+            "differencing": 0,
+            "normalisation": null
+          },
+          "processing": {
+            "transform": "none",
+            "decomposition": "none",
+            "differencing": "none",
+            "normalisation": "none"
+          },
+          "training_window": 10752,
+          "inputs": [
+            "dow_mon",
+            "dow_tue",
+            "dow_wed",
+            "dow_thu",
+            "dow_fri",
+            "dow_sat",
+            "dow_sun",
+            "load_RO",
+            "generation_RO",
+            "solar_RO",
+            "load_HU",
+            "generation_HU",
+            "solar_HU",
+            "load_BG",
+            "generation_BG",
+            "solar_BG",
+            "load_actual_RO",
+            "generation_actual_RO",
+            "solar_actual_RO",
+            "load_actual_HU",
+            "generation_actual_HU",
+            "solar_actual_HU"
+          ]
+        },
+        {
+          "method": "MLP",
+          "method_parameters": {
+            "lag_days": [
+              1,
+              2,
+              3,
+              4,
+              5,
+              6,
+              7
+            ],
+            "lag_resolution": "hourly",
+            "exog_lag_days": {
+              "load_actual_RO": [
+                2,
+                7
+              ],
+              "generation_actual_RO": [
+                2,
+                7
+              ],
+              "solar_actual_RO": [
+                2,
+                7
+              ],
+              "load_actual_HU": [
+                2,
+                7
+              ],
+              "generation_actual_HU": [
+                2,
+                7
+              ],
+              "solar_actual_HU": [
+                2,
+                7
+              ]
+            },
+            "exog_lag_transform": "asinh",
+            "steps_per_day": 96,
+            "minimum_calibration_days": 28,
+            "activation": "relu",
+            "batch_size": 16,
+            "max_epochs": 500,
+            "patience": 30,
+            "validation_days": 14,
+            "refit": true,
+            "n_seeds": 3,
+            "seed": 0,
+            "hidden_layers": [
+              64,
+              32
+            ],
+            "dropout": 0.1,
+            "weight_decay": 0.001,
+            "learning_rate": 0.001
+          },
+          "processing_parameters": {
+            "transform": null,
+            "decomposition": null,
+            "differencing": 0,
+            "normalisation": null
+          },
+          "processing": {
+            "transform": "none",
+            "decomposition": "none",
+            "differencing": "none",
+            "normalisation": "none"
+          },
+          "training_window": 16128,
+          "inputs": [
+            "dow_mon",
+            "dow_tue",
+            "dow_wed",
+            "dow_thu",
+            "dow_fri",
+            "dow_sat",
+            "dow_sun",
+            "load_RO",
+            "generation_RO",
+            "solar_RO",
+            "load_HU",
+            "generation_HU",
+            "solar_HU",
+            "load_BG",
+            "generation_BG",
+            "solar_BG",
+            "load_actual_RO",
+            "generation_actual_RO",
+            "solar_actual_RO",
+            "load_actual_HU",
+            "generation_actual_HU",
+            "solar_actual_HU"
+          ]
+        }
+      ]
+    },
+    "MLP (64, 32) price lags 1-7 16-32w: ensemble #2 + #3, mean": {
+      "method": "MLP",
+      "aggregation": "mean",
+      "member_ranks": [
+        2,
+        3
+      ],
+      "members": [
+        {
+          "method": "MLP",
+          "method_parameters": {
+            "lag_days": [
+              1,
+              2,
+              3,
+              4,
+              5,
+              6,
+              7
+            ],
+            "lag_resolution": "hourly",
+            "exog_lag_days": {
+              "load_actual_RO": [
+                2,
+                7
+              ],
+              "generation_actual_RO": [
+                2,
+                7
+              ],
+              "solar_actual_RO": [
+                2,
+                7
+              ],
+              "load_actual_HU": [
+                2,
+                7
+              ],
+              "generation_actual_HU": [
+                2,
+                7
+              ],
+              "solar_actual_HU": [
+                2,
+                7
+              ]
+            },
+            "exog_lag_transform": "asinh",
+            "steps_per_day": 96,
+            "minimum_calibration_days": 28,
+            "activation": "relu",
+            "batch_size": 16,
+            "max_epochs": 500,
+            "patience": 30,
+            "validation_days": 14,
+            "refit": true,
+            "n_seeds": 3,
+            "seed": 0,
+            "hidden_layers": [
+              64,
+              32
+            ],
+            "dropout": 0.1,
+            "weight_decay": 0.001,
+            "learning_rate": 0.001
+          },
+          "processing_parameters": {
+            "transform": null,
+            "decomposition": null,
+            "differencing": 0,
+            "normalisation": null
+          },
+          "processing": {
+            "transform": "none",
+            "decomposition": "none",
+            "differencing": "none",
+            "normalisation": "none"
+          },
+          "training_window": 21504,
+          "inputs": [
+            "dow_mon",
+            "dow_tue",
+            "dow_wed",
+            "dow_thu",
+            "dow_fri",
+            "dow_sat",
+            "dow_sun",
+            "load_RO",
+            "generation_RO",
+            "solar_RO",
+            "load_HU",
+            "generation_HU",
+            "solar_HU",
+            "load_BG",
+            "generation_BG",
+            "solar_BG",
+            "load_actual_RO",
+            "generation_actual_RO",
+            "solar_actual_RO",
+            "load_actual_HU",
+            "generation_actual_HU",
+            "solar_actual_HU"
+          ]
+        },
+        {
+          "method": "MLP",
+          "method_parameters": {
+            "lag_days": [
+              1,
+              2,
+              3,
+              4,
+              5,
+              6,
+              7
+            ],
+            "lag_resolution": "hourly",
+            "exog_lag_days": {
+              "load_actual_RO": [
+                2,
+                7
+              ],
+              "generation_actual_RO": [
+                2,
+                7
+              ],
+              "solar_actual_RO": [
+                2,
+                7
+              ],
+              "load_actual_HU": [
+                2,
+                7
+              ],
+              "generation_actual_HU": [
+                2,
+                7
+              ],
+              "solar_actual_HU": [
+                2,
+                7
+              ]
+            },
+            "exog_lag_transform": "asinh",
+            "steps_per_day": 96,
+            "minimum_calibration_days": 28,
+            "activation": "relu",
+            "batch_size": 16,
+            "max_epochs": 500,
+            "patience": 30,
+            "validation_days": 14,
+            "refit": true,
+            "n_seeds": 3,
+            "seed": 0,
+            "hidden_layers": [
+              64,
+              32
+            ],
+            "dropout": 0.1,
+            "weight_decay": 0.001,
+            "learning_rate": 0.001
+          },
+          "processing_parameters": {
+            "transform": null,
+            "decomposition": null,
+            "differencing": 0,
+            "normalisation": null
+          },
+          "processing": {
+            "transform": "none",
+            "decomposition": "none",
+            "differencing": "none",
+            "normalisation": "none"
+          },
+          "training_window": 16128,
+          "inputs": [
+            "dow_mon",
+            "dow_tue",
+            "dow_wed",
+            "dow_thu",
+            "dow_fri",
+            "dow_sat",
+            "dow_sun",
+            "load_RO",
+            "generation_RO",
+            "solar_RO",
+            "load_HU",
+            "generation_HU",
+            "solar_HU",
+            "load_BG",
+            "generation_BG",
+            "solar_BG",
+            "load_actual_RO",
+            "generation_actual_RO",
+            "solar_actual_RO",
+            "load_actual_HU",
+            "generation_actual_HU",
+            "solar_actual_HU"
+          ]
+        }
+      ]
+    },
+    "All methods: best (Naive #3 + LEAR+RO+HU+BG forecasts full 16-24w #1 + MLP (64, 32) price lags 1-7 16-32w #1 + MLP (64, 32) price lags 1-7 16-32w #2, median)": {
+      "method": "Naive + LEAR + MLP",
+      "aggregation": "median",
+      "members": [
+        {
+          "experiment": "Naive",
+          "rank": 3,
+          "method": "Naive",
+          "method_parameters": {
+            "predictors_length": 3,
+            "predictors_offset": 672,
+            "average_type": "mean"
+          },
+          "processing_parameters": {
+            "transform": "sqrt",
+            "decomposition": null,
+            "differencing": 1,
+            "normalisation": null
+          },
+          "processing": {
+            "transform": "sqrt",
+            "decomposition": "none",
+            "differencing": "1",
+            "normalisation": "none"
+          },
+          "training_window": null,
+          "inputs": []
+        },
+        {
+          "experiment": "LEAR+RO+HU+BG forecasts full 16-24w",
+          "rank": 1,
+          "method": "LEAR",
+          "method_parameters": {
+            "lag_days": [
+              1,
+              2,
+              3,
+              7
+            ],
+            "lag_resolution": "full",
+            "exog_lag_days": {
+              "load_actual_RO": [
+                2,
+                7
+              ],
+              "generation_actual_RO": [
+                2,
+                7
+              ],
+              "solar_actual_RO": [
+                2,
+                7
+              ],
+              "load_actual_HU": [
+                2,
+                7
+              ],
+              "generation_actual_HU": [
+                2,
+                7
+              ],
+              "solar_actual_HU": [
+                2,
+                7
+              ]
+            },
+            "exog_lag_transform": "asinh",
+            "lag_interactions": [],
+            "penalty": "aic",
+            "steps_per_day": 96,
+            "minimum_calibration_days": 14
+          },
+          "processing_parameters": {
+            "transform": null,
+            "decomposition": null,
+            "differencing": 0,
+            "normalisation": null
+          },
+          "processing": {
+            "transform": "none",
+            "decomposition": "none",
+            "differencing": "none",
+            "normalisation": "none"
+          },
+          "training_window": 16128,
+          "inputs": [
+            "dow_mon",
+            "dow_tue",
+            "dow_wed",
+            "dow_thu",
+            "dow_fri",
+            "dow_sat",
+            "dow_sun",
+            "load_RO",
+            "generation_RO",
+            "solar_RO",
+            "load_HU",
+            "generation_HU",
+            "solar_HU",
+            "load_BG",
+            "generation_BG",
+            "solar_BG",
+            "load_actual_RO",
+            "generation_actual_RO",
+            "solar_actual_RO",
+            "load_actual_HU",
+            "generation_actual_HU",
+            "solar_actual_HU"
+          ]
+        },
+        {
+          "experiment": "MLP (64, 32) price lags 1-7 16-32w",
+          "rank": 1,
+          "method": "MLP",
+          "method_parameters": {
+            "lag_days": [
+              1,
+              2,
+              3,
+              4,
+              5,
+              6,
+              7
+            ],
+            "lag_resolution": "hourly",
+            "exog_lag_days": {
+              "load_actual_RO": [
+                2,
+                7
+              ],
+              "generation_actual_RO": [
+                2,
+                7
+              ],
+              "solar_actual_RO": [
+                2,
+                7
+              ],
+              "load_actual_HU": [
+                2,
+                7
+              ],
+              "generation_actual_HU": [
+                2,
+                7
+              ],
+              "solar_actual_HU": [
+                2,
+                7
+              ]
+            },
+            "exog_lag_transform": "asinh",
+            "steps_per_day": 96,
+            "minimum_calibration_days": 28,
+            "activation": "relu",
+            "batch_size": 16,
+            "max_epochs": 500,
+            "patience": 30,
+            "validation_days": 14,
+            "refit": true,
+            "n_seeds": 3,
+            "seed": 0,
+            "hidden_layers": [
+              64,
+              32
+            ],
+            "dropout": 0.1,
+            "weight_decay": 0.001,
+            "learning_rate": 0.001
+          },
+          "processing_parameters": {
+            "transform": null,
+            "decomposition": null,
+            "differencing": 0,
+            "normalisation": null
+          },
+          "processing": {
+            "transform": "none",
+            "decomposition": "none",
+            "differencing": "none",
+            "normalisation": "none"
+          },
+          "training_window": 10752,
+          "inputs": [
+            "dow_mon",
+            "dow_tue",
+            "dow_wed",
+            "dow_thu",
+            "dow_fri",
+            "dow_sat",
+            "dow_sun",
+            "load_RO",
+            "generation_RO",
+            "solar_RO",
+            "load_HU",
+            "generation_HU",
+            "solar_HU",
+            "load_BG",
+            "generation_BG",
+            "solar_BG",
+            "load_actual_RO",
+            "generation_actual_RO",
+            "solar_actual_RO",
+            "load_actual_HU",
+            "generation_actual_HU",
+            "solar_actual_HU"
+          ]
+        },
+        {
+          "experiment": "MLP (64, 32) price lags 1-7 16-32w",
+          "rank": 2,
+          "method": "MLP",
+          "method_parameters": {
+            "lag_days": [
+              1,
+              2,
+              3,
+              4,
+              5,
+              6,
+              7
+            ],
+            "lag_resolution": "hourly",
+            "exog_lag_days": {
+              "load_actual_RO": [
+                2,
+                7
+              ],
+              "generation_actual_RO": [
+                2,
+                7
+              ],
+              "solar_actual_RO": [
+                2,
+                7
+              ],
+              "load_actual_HU": [
+                2,
+                7
+              ],
+              "generation_actual_HU": [
+                2,
+                7
+              ],
+              "solar_actual_HU": [
+                2,
+                7
+              ]
+            },
+            "exog_lag_transform": "asinh",
+            "steps_per_day": 96,
+            "minimum_calibration_days": 28,
+            "activation": "relu",
+            "batch_size": 16,
+            "max_epochs": 500,
+            "patience": 30,
+            "validation_days": 14,
+            "refit": true,
+            "n_seeds": 3,
+            "seed": 0,
+            "hidden_layers": [
+              64,
+              32
+            ],
+            "dropout": 0.1,
+            "weight_decay": 0.001,
+            "learning_rate": 0.001
+          },
+          "processing_parameters": {
+            "transform": null,
+            "decomposition": null,
+            "differencing": 0,
+            "normalisation": null
+          },
+          "processing": {
+            "transform": "none",
+            "decomposition": "none",
+            "differencing": "none",
+            "normalisation": "none"
+          },
+          "training_window": 21504,
+          "inputs": [
+            "dow_mon",
+            "dow_tue",
+            "dow_wed",
+            "dow_thu",
+            "dow_fri",
+            "dow_sat",
+            "dow_sun",
+            "load_RO",
+            "generation_RO",
+            "solar_RO",
+            "load_HU",
+            "generation_HU",
+            "solar_HU",
+            "load_BG",
+            "generation_BG",
+            "solar_BG",
+            "load_actual_RO",
+            "generation_actual_RO",
+            "solar_actual_RO",
+            "load_actual_HU",
+            "generation_actual_HU",
+            "solar_actual_HU"
+          ]
+        }
+      ]
+    },
+    "Block-wise selection (00-05: Naive #4 + LEAR+RO+HU+BG forecasts full 16-24w #1 + LEAR+RO+HU+BG forecasts full 16-24w #2 + MLP (64, 32) price lags 1-7 16-32w #3 (mean), 06-11: Naive #4 + LEAR+RO+HU+BG forecasts full 16-24w #1 + MLP (64, 32) price lags 1-7 16-32w #2 (median), 12-17: Naive #2 + LEAR+RO+HU+BG forecasts full 16-24w #1 + MLP (64, 32) price lags 1-7 16-32w #1 + MLP (64, 32) price lags 1-7 16-32w #2 + MLP (64, 32) price lags 1-7 16-32w #3 (median), 18-23: Naive #3 + LEAR+RO+HU+BG forecasts full 16-24w #2 + MLP (64, 32) price lags 1-7 16-32w #1 + MLP (64, 32) price lags 1-7 16-32w #2 (median))": {
+      "method": "Naive + LEAR + MLP",
+      "blocks": [
+        {
+          "block": "00-05",
+          "candidate": "Naive #4 + LEAR+RO+HU+BG forecasts full 16-24w #1 + LEAR+RO+HU+BG forecasts full 16-24w #2 + MLP (64, 32) price lags 1-7 16-32w #3 (mean)"
+        },
+        {
+          "block": "06-11",
+          "candidate": "Naive #4 + LEAR+RO+HU+BG forecasts full 16-24w #1 + MLP (64, 32) price lags 1-7 16-32w #2 (median)"
+        },
+        {
+          "block": "12-17",
+          "candidate": "Naive #2 + LEAR+RO+HU+BG forecasts full 16-24w #1 + MLP (64, 32) price lags 1-7 16-32w #1 + MLP (64, 32) price lags 1-7 16-32w #2 + MLP (64, 32) price lags 1-7 16-32w #3 (median)"
+        },
+        {
+          "block": "18-23",
+          "candidate": "Naive #3 + LEAR+RO+HU+BG forecasts full 16-24w #2 + MLP (64, 32) price lags 1-7 16-32w #1 + MLP (64, 32) price lags 1-7 16-32w #2 (median)"
+        }
+      ]
+    }
+  }
+}
