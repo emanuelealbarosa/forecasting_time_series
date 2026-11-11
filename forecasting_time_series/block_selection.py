@@ -115,6 +115,11 @@ class BlockSelection:
         print(f'Whole day: block-wise {self.score:,.2f} vs the best whole-day candidate '
               f'({self.label(1)}) {self.whole_day_score:,.2f}')
 
+    def winner_members(self) -> list[int]:
+        """The pool members (positions) the block winners are made of, each once: what has to be
+        refitted every day to forecast with this selection."""
+        return sorted({p for c in self.choices for p in self.pool.results[c.rank - 1].members})
+
     def label(self, rank: int) -> str:
         result = self.pool.results[rank - 1]
         return self.pool.label(result) + ('' if result.aggregation == 'single' else f' ({result.aggregation})')

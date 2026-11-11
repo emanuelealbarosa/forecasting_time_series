@@ -1,3 +1,5 @@
+import time
+
 import numpy
 from . import forecast
 
@@ -45,6 +47,7 @@ class validation_agent:
         self.failure_reasons = []      # one reason per split that failed
         self.split_predictions = []    # forecasts of each split that succeeded (used for ensembles)
         self.split_actuals = []        # the actual values they were scored against
+        self.split_seconds = []        # wall seconds to fit and forecast each split that succeeded
         self.error_overall_score = None
 
     # main method
@@ -71,13 +74,16 @@ class validation_agent:
 
     def forecast_through_splits(self):
         for index in self.validation_splits_indices:
+            started = time.perf_counter()
             score, model, failure_reason, predictions, actual = self.forecast_single_split(index)
+            seconds = time.perf_counter() - started
             self.errors.append(score)
             if failure_reason is not None:
                 self.failure_reasons.append(failure_reason)
             else:  # success: same order as the scores kept by clean_invalid_error_values
                 self.split_predictions.append(predictions)
                 self.split_actuals.append(actual)
+                self.split_seconds.append(seconds)
             self.model_instance = model
 
     def clean_invalid_error_values(self):

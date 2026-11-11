@@ -51,8 +51,15 @@ class SearchResult:
     split_scores: list[float] = field(default_factory=list)  # one per validation split that succeeded
     split_predictions: list[list[float]] = field(default_factory=list)  # their forecasts (for ensembles)
     split_actuals: list[list[float]] = field(default_factory=list)      # and the actual values
+    split_seconds: list[float] = field(default_factory=list)  # wall seconds to fit and forecast each split
     score: float | None = None    # split_scores combined; None unless every split succeeded
     errors: list[str] = field(default_factory=list)          # why splits failed, if any did
+
+    @property
+    def fit_seconds(self) -> float | None:
+        """Median wall seconds to fit and forecast one validation split (one forecasting period): what
+        the combination costs each time it is refitted. None if no split was timed."""
+        return float(np.median(self.split_seconds)) if self.split_seconds else None
 
     @property
     def is_valid(self) -> bool:
@@ -203,6 +210,7 @@ def _evaluate(context: dict, result: SearchResult) -> SearchResult:
     result.split_scores = [float(score) for score in validator.errors]
     result.split_predictions = validator.split_predictions
     result.split_actuals = validator.split_actuals
+    result.split_seconds = validator.split_seconds
     result.errors = validator.failure_reasons
     if len(result.split_scores) == context['general_parameters']['validation_number_of_splits']:
         result.score = aggregate_score(context['score_aggregation'],

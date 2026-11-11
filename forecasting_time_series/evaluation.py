@@ -122,10 +122,11 @@ def forecast_combined(experiments: dict[str, ForecastExperiment], data: pd.DataF
     if verbose:
         print('\nTest forecasts, best combination of all methods:')
     forecast = combined.rolling_forecasts(data, start, horizon, n_jobs=n_jobs, verbose=verbose)
-    settings = {'method': _methods(experiments), 'aggregation': best.aggregation,
-                'members': [{'experiment': combined.members[p].method, 'rank': combined.members[p].rank,
-                             **results_log.single_settings(combined.members[p].experiment, combined.members[p].rank)}
-                            for p in best.members]}
+    members = [{'experiment': combined.members[p].method, 'rank': combined.members[p].rank,
+                **results_log.single_settings(combined.members[p].experiment, combined.members[p].rank)}
+               for p in best.members]
+    settings = {'method': _methods(experiments), 'aggregation': best.aggregation, 'members': members,
+                'fit_seconds': results_log.total_fit_seconds(members)}
     metric = next(iter(experiments.values())).metric
     return _record(label, ' + '.join(experiments), 'all methods', forecast, metric, combined.validation_score(),
                    combined.number_of_splits, settings, results_log.pool_validation_forecast(combined, best))
@@ -145,8 +146,12 @@ def forecast_blockwise(experiments: dict[str, ForecastExperiment], data: pd.Data
     if verbose:
         print('\nTest forecasts, block-wise selection:')
     forecast = blockwise.rolling_forecasts(data, start, horizon, n_jobs=n_jobs, verbose=verbose)
+    pool = blockwise.pool
+    members = [results_log.single_settings(pool.members[p].experiment, pool.members[p].rank)
+               for p in blockwise.winner_members()]
     settings = {'method': _methods(experiments),
-                'blocks': [{'block': str(c.block), 'candidate': blockwise.label(c.rank)} for c in blockwise.choices]}
+                'blocks': [{'block': str(c.block), 'candidate': blockwise.label(c.rank)} for c in blockwise.choices],
+                'fit_seconds': results_log.total_fit_seconds(members)}
     metric = next(iter(experiments.values())).metric
     return _record(label, ' + '.join(experiments), 'block-wise', forecast, metric, blockwise.score,
                    blockwise.pool.number_of_splits, settings, blockwise.validation_predictions)

@@ -16,6 +16,7 @@ from __future__ import annotations
 
 import json
 import os
+import platform
 import re
 import shutil
 import subprocess
@@ -45,7 +46,7 @@ FLAT_SETTINGS = ('training_window', 'transform', 'decomposition', 'differencing'
 
 COLUMNS = ('run_id', 'timestamp', 'experiment', 'model', 'kind', 'method',
            'validation_metric', 'validation_score', 'validation_days', 'test_rmse', 'test_mae',
-           'test_start', 'test_end', 'test_days', *FLAT_SETTINGS,
+           'test_start', 'test_end', 'test_days', 'fit_seconds', 'environment', *FLAT_SETTINGS,
            'settings', 'forecasts_file', 'git_commit', 'uncommitted_changes', 'notes',
            'validation_start', 'validation_end', 'validation_forecasts_file')
 
@@ -90,7 +91,24 @@ def single_settings(experiment, rank: int) -> dict:
             'processing_parameters': chosen['processing_parameters'],
             'processing': processing.describe(**chosen['processing_parameters']),
             'training_window': chosen['training_window'],
-            'inputs': _inputs(experiment)}
+            'inputs': _inputs(experiment),
+            'fit_seconds': experiment.results[rank - 1].fit_seconds}
+
+
+def total_fit_seconds(member_settings) -> float | None:
+    """The fit seconds of a model made of several single combinations (an ensemble, a combination across
+    methods, a block-wise selection): the sum over its distinct members, each refitted once per period.
+    None if any member has no timing (saved by an older version)."""
+    values = [settings.get('fit_seconds') for settings in member_settings]
+    if not values or any(value is None for value in values):
+        return None
+    return float(sum(values))
+
+
+def environment() -> str:
+    """Where the run is made, for comparing fit seconds: timings are comparable within one environment."""
+    place = 'Colab' if 'COLAB_RELEASE_TAG' in os.environ else platform.system()
+    return f'{place}, {os.cpu_count()} CPUs'
 
 
 def _inputs(experiment) -> list[str]:
@@ -101,9 +119,10 @@ def _inputs(experiment) -> list[str]:
 def ensemble_settings(experiment, rank: int) -> dict:
     """Settings of the ensemble at `rank`: how its members are combined, and each member's settings."""
     chosen = experiment.ensemble_results[rank - 1]
+    members = [single_settings(experiment, member) for member in chosen.members]
     return {'method': experiment.method, 'aggregation': chosen.aggregation,
-            'member_ranks': list(chosen.members),
-            'members': [single_settings(experiment, member) for member in chosen.members]}
+            'member_ranks': list(chosen.members), 'members': members,
+            'fit_seconds': total_fit_seconds(members)}
 
 
 def candidate_settings(experiment, rank: int, ensemble: bool) -> dict:
@@ -132,7 +151,8 @@ def experiment_settings(experiment) -> dict:
             'training_data': {'rows': len(experiment.data),
                               'start': None if train_dates is None else str(train_dates.iloc[0]),
                               'end': None if train_dates is None else str(train_dates.iloc[-1])},
-            'combinations_ranked': len(experiment.results), 'combinations_failed': len(experiment.failed)}
+            'combinations_ranked': len(experiment.results), 'combinations_failed': len(experiment.failed),
+            'n_jobs': getattr(experiment, 'n_jobs', None)}
 
 
 # ------------------------------------------------------------------ saving a run
@@ -146,7 +166,8 @@ def save_run(experiment_names, dates, actual, records, experiments=None, notes: 
     dates, actual: the test period's timestamps and actual values.
     records: one dict per model tested, with keys model, experiment, kind ('single', 'ensemble', or
         e.g. 'all methods'), forecast (one value per test step), validation_metric, validation_score,
-        validation_days, settings (a dict; see candidate_settings) and optionally validation_forecast
+        validation_days, settings (a dict; see candidate_settings; its fit_seconds goes into runs.csv),
+        optionally environment (where its models were fitted; default: here) and validation_forecast
         (see validation_forecast; it may cover only the last validation days, e.g. those shared across
         methods: it is aligned on the last day and left blank before).
     experiments: {name: ForecastExperiment}, whose search settings go into settings.json.
@@ -193,6 +214,7 @@ def save_run(experiment_names, dates, actual, records, experiments=None, notes: 
     settings = {'run_id': run_id, 'timestamp': started.isoformat(timespec='seconds'),
                 'experiments': names, 'git_commit': commit, 'uncommitted_changes': dirty, 'notes': notes,
                 'test_period': {'start': str(dates[0]), 'end': str(dates[-1]), 'steps': len(dates)},
+                'environment': environment(),
                 'experiment_settings': {**{name: experiment_settings(experiment)
                                            for name, experiment in (experiments or {}).items()},
                                         **(extra_experiment_settings or {})},
@@ -215,6 +237,8 @@ def save_run(experiment_names, dates, actual, records, experiments=None, notes: 
                      'test_mae': metrics.mae(forecasts[label], actual),
                      'test_start': str(dates[0]), 'test_end': str(dates[-1]),
                      'test_days': len(dates) / steps_per_day if steps_per_day else None,
+                     'fit_seconds': record['settings'].get('fit_seconds'),
+                     'environment': record.get('environment') or settings['environment'],
                      **flat,
                      'settings': json.dumps(record['settings'], default=_jsonable),
                      'forecasts_file': f'{run_id}/forecasts.csv',

@@ -64,6 +64,7 @@ class SavedExperiment:
     outcome_variable: str = 'actual'
     time_variable: str = 'date'
     split_plan: object = True             # read by CombinedEnsembles only as "has been run"
+    environment: str | None = None        # where the run was made (None: saved by an older version)
 
     @property
     def method(self) -> str:
@@ -149,7 +150,8 @@ def load_saved_experiments(directory, run_ids) -> tuple[dict[str, SavedExperimen
             saved = SavedExperiment(name=name, run_id=run['run_id'], metric=spec['metric'],
                                     score_aggregation=spec['score_aggregation'], forecasting_period=period,
                                     number_of_splits=splits, ensemble_top_n=int(spec['ensemble_top_n']),
-                                    ensemble_aggregations=tuple(spec['ensemble_aggregations']), data=longest)
+                                    ensemble_aggregations=tuple(spec['ensemble_aggregations']), data=longest,
+                                    environment=run['settings'].get('environment'))
             scorer = metrics.evaluator({'type': saved.metric})
             actual = longest['actual'].to_numpy(float)[-splits * period:].reshape(splits, period)
             singles = _singles(run, kinds, name)
@@ -219,11 +221,12 @@ def combine_runs(directory, run_ids, *, day_blocks: dict | None = SIX_HOUR_BLOCK
                 results_log.pool_validation_forecast(pool, alone)))
 
     best = pool.results[0]
-    settings = {'method': method, 'aggregation': best.aggregation, 'source_runs': sources,
-                'members': [{'experiment': pool.members[p].method, 'rank': pool.members[p].rank,
-                             'source_run': pool.members[p].experiment.run_id,
-                             **pool.members[p].experiment.settings[pool.members[p].rank - 1]}
-                            for p in best.members]}
+    members = [{'experiment': pool.members[p].method, 'rank': pool.members[p].rank,
+                'source_run': pool.members[p].experiment.run_id,
+                **pool.members[p].experiment.settings[pool.members[p].rank - 1]}
+               for p in best.members]
+    settings = {'method': method, 'aggregation': best.aggregation, 'source_runs': sources, 'members': members,
+                'fit_seconds': results_log.total_fit_seconds(members)}
     label = f'All methods: best ({pool.label(best)}{"" if best.size == 1 else ", " + best.aggregation})'
     result.records.append(_record(label, method, 'all methods', pool.rolling_forecasts(test, start, horizon),
                                   first.metric, pool.validation_score(), pool.number_of_splits, settings,
@@ -238,10 +241,18 @@ def combine_runs(directory, run_ids, *, day_blocks: dict | None = SIX_HOUR_BLOCK
                                                     for c in blockwise.choices) + ')'
         settings = {'method': method, 'source_runs': sources,
                     'blocks': [{'block': str(c.block), 'candidate': blockwise.label(c.rank)}
-                               for c in blockwise.choices]}
+                               for c in blockwise.choices],
+                    'fit_seconds': results_log.total_fit_seconds(
+                        [pool.members[p].experiment.settings[pool.members[p].rank - 1]
+                         for p in blockwise.winner_members()])}
         result.records.append(_record(label, method, 'block-wise', blockwise.rolling_forecasts(test, start, horizon),
                                       first.metric, blockwise.score, blockwise.pool.number_of_splits, settings,
                                       blockwise.validation_predictions))
+
+    # the models were fitted where their source runs were made, not here: their fit seconds come from there
+    places = list(dict.fromkeys(e.environment or 'unknown' for e in experiments.values()))
+    for record in result.records:
+        record['environment'] = ' + '.join(places)
 
     result.forecasts = {r['model']: r['forecast'] for r in result.records}
     if verbose:
