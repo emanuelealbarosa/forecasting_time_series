@@ -2,7 +2,14 @@
 """naive
 """
 
-import numpy 
+import numpy
+
+
+def required_history(method_parameters):
+  """Training observations (after preprocessing) needed for the first forecast:
+  the furthest value averaged is predictors_length * predictors_offset steps back."""
+  return method_parameters.get('predictors_length') * method_parameters.get('predictors_offset')
+
 
 class method():
 

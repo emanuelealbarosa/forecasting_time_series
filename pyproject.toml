@@ -1,0 +1,27 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "forecasting-time-series"
+version = "0.1.0"
+description = "Day-ahead time series forecasting: grid search over methods and processing, ensembles, block-wise selection and a results log."
+readme = "README.md"
+requires-python = ">=3.11"
+authors = [{ name = "Emanuele Albarosa" }]
+# lower bounds: the versions the code has been run with
+dependencies = [
+    "numpy>=2.3",
+    "pandas>=2.3",
+    "scipy>=1.15",
+    "scikit-learn>=1.7",   # brings threadpoolctl, used to limit threads in the parallel test forecasts
+]
+
+[project.optional-dependencies]
+neural = ["torch>=2.15"]              # the MLP and LSTM methods
+decomposition = ["statsmodels>=0.14"] # the MSTL decomposition step
+dashboard = ["dash>=4.5", "plotly>=7.1"]   # forecasting_time_series.dashboard
+all = ["forecasting-time-series[neural,decomposition,dashboard]"]
+
+[tool.setuptools.packages.find]
+include = ["forecasting_time_series*"]

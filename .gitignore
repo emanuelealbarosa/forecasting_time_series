@@ -11,5 +11,20 @@ env/
 # IDE settings (JetBrains / PyCharm)
 .idea/
 
+# Claude Code personal settings (local permission rules)
+.claude
+.claude/settings.local.json
+
 # OS cruft
 .DS_Store
+
+# Results files
+results/
+
+# Packaging and build output (pip install, python -m build)
+build/
+dist/
+*.egg-info/
+
+# Data files (the library reads none itself; scripts load them)
+*.csv

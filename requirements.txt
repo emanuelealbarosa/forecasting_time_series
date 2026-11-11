@@ -1,0 +1,2 @@
+# development install of this library with every optional method (the dependencies are in pyproject.toml)
+-e .[all]
