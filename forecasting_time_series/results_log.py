@@ -137,7 +137,8 @@ def experiment_settings(experiment) -> dict:
 
 # ------------------------------------------------------------------ saving a run
 def save_run(experiment_names, dates, actual, records, experiments=None, notes: str = '', *,
-             directory: Path | str, validation_dates=None, validation_actual=None) -> Path:
+             directory: Path | str, validation_dates=None, validation_actual=None,
+             extra_experiment_settings: dict | None = None) -> Path:
     """Save one run in the results folder `directory`: its forecasts and settings in a new folder
     <directory>/<run id>, and one row per model appended to <directory>/runs.csv.
 
@@ -151,6 +152,8 @@ def save_run(experiment_names, dates, actual, records, experiments=None, notes: 
     experiments: {name: ForecastExperiment}, whose search settings go into settings.json.
     validation_dates, validation_actual: the validation days' timestamps and actual values (the
         longest validation period of the run; see validation_period).
+    extra_experiment_settings: {name: dict} saved in settings.json with those of `experiments`, for runs
+        without ForecastExperiments (saved_runs.combine_runs: the run each experiment came from).
     Returns the run's folder."""
     directory = Path(directory)
     started = datetime.now()
@@ -190,8 +193,9 @@ def save_run(experiment_names, dates, actual, records, experiments=None, notes: 
     settings = {'run_id': run_id, 'timestamp': started.isoformat(timespec='seconds'),
                 'experiments': names, 'git_commit': commit, 'uncommitted_changes': dirty, 'notes': notes,
                 'test_period': {'start': str(dates[0]), 'end': str(dates[-1]), 'steps': len(dates)},
-                'experiment_settings': {name: experiment_settings(experiment)
-                                        for name, experiment in (experiments or {}).items()},
+                'experiment_settings': {**{name: experiment_settings(experiment)
+                                           for name, experiment in (experiments or {}).items()},
+                                        **(extra_experiment_settings or {})},
                 'models': {label: record['settings'] for label, record in zip(labels, records)}}
     with open(run_directory / 'settings.json', 'w', encoding='utf-8') as file:
         json.dumps(settings, default=_jsonable)  # fail before writing a partial file
