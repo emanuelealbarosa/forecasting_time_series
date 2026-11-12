@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "forecasting-time-series"
-version = "0.2.2"
+version = "0.2.3"
 description = "Day-ahead time series forecasting: grid search over methods and processing, ensembles, block-wise selection and a results log."
 readme = "README.md"
 requires-python = ">=3.11"

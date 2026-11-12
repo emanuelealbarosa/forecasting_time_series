@@ -91,20 +91,28 @@ class RunData:
     validation_metric: str  # the metric of the validation scores (e.g. 'rmse')
 
 
-def load_history(data, time_column: str = 'date', value_column: str = 'price') -> pd.DataFrame:
-    """The original series as (time, actual), time in UTC without a time zone. `data`: a DataFrame or a
-    CSV path, with the columns time_column and value_column."""
+def load_history(data, time_column: str = 'date', value_column: str = 'price',
+                 timezone: str | None = None) -> pd.DataFrame:
+    """The original series as (time, actual), time without a time zone. `data`: a DataFrame or a CSV path,
+    with the columns time_column and value_column. timezone: the times are read as UTC and shown on that
+    time zone's clock (for a run made on local days from a UTC file; the hour repeated when the clocks go
+    back takes the mean of its two values); None → the times as they are."""
     if isinstance(data, pd.DataFrame):
         raw = data[[time_column, value_column]]
     else:
         raw = pd.read_csv(data, usecols=[time_column, value_column])
-    time = pd.to_datetime(raw[time_column], utc=True).dt.tz_localize(None)
-    return pd.DataFrame({'time': time.to_numpy(), 'actual': raw[value_column].to_numpy(dtype=float)}) \
-        .dropna().sort_values('time').reset_index(drop=True)
+    time = pd.to_datetime(raw[time_column], utc=True)
+    if timezone is not None:
+        time = time.dt.tz_convert(timezone)
+    history = pd.DataFrame({'time': time.dt.tz_localize(None).to_numpy(),
+                            'actual': raw[value_column].to_numpy(dtype=float)}).dropna()
+    if timezone is not None:
+        history = history.groupby('time', as_index=False)['actual'].mean()
+    return history.sort_values('time').reset_index(drop=True)
 
 
 def load_run(results_folder, data, time_column: str = 'date', value_column: str = 'price',
-             top_n: int = TOP_N) -> RunData:
+             top_n: int = TOP_N, timezone: str | None = None) -> RunData:
     """The run saved in `results_folder` (with the history from the original `data`, see load_history),
     keeping the top_n single models and the top_n ensembles by validation score."""
     folder = Path(results_folder)
@@ -153,7 +161,7 @@ def load_run(results_folder, data, time_column: str = 'date', value_column: str 
     # history from the original data up to the end of the test period; the test actuals from the run
     test = pd.DataFrame({'time': pd.to_datetime(forecasts['date']).to_numpy(),
                          'actual': forecasts['actual'].to_numpy(dtype=float)})
-    values = load_history(data, time_column, value_column)
+    values = load_history(data, time_column, value_column, timezone)
     history = values[values['time'] < test['time'].iloc[0]]
     frame = pd.concat([history, test], ignore_index=True)
     test_start = len(history)
@@ -173,10 +181,11 @@ def short_name(label: str, kind: str) -> str:
 
 # ---------------------------------------------------------------------- the app
 def build_app(results_folder, data, time_column: str = 'date', value_column: str = 'price', top_n: int = TOP_N,
-              title: str | None = None, ylabel: str | None = None) -> Dash:
+              title: str | None = None, ylabel: str | None = None, timezone: str | None = None) -> Dash:
     """The dashboard of the run in `results_folder`, with the history before the test period from `data`
-    (the original series: a DataFrame or a CSV path, see load_history). ylabel: the values' unit."""
-    run = load_run(results_folder, data, time_column, value_column, top_n)
+    (the original series: a DataFrame or a CSV path, see load_history). ylabel: the values' unit.
+    timezone: see load_history."""
+    run = load_run(results_folder, data, time_column, value_column, top_n, timezone)
     frame, models, test_start = run.frame, run.models, run.test_start
     test = frame.iloc[test_start:]
     codes = list(models.index)
@@ -352,7 +361,7 @@ def build_app(results_folder, data, time_column: str = 'date', value_column: str
 def run_dashboard(results_folder, data, time_column: str = 'date', value_column: str = 'price', port: int = 8050,
                   top_n: int = TOP_N, **kwargs):
     """Build the dashboard of `results_folder` and serve it at http://127.0.0.1:<port> (until stopped).
-    kwargs: build_app's title and ylabel."""
+    kwargs: build_app's title, ylabel and timezone."""
     app = build_app(results_folder, data, time_column, value_column, top_n, **kwargs)
     print(f'\nStarting the dashboard: open http://127.0.0.1:{port} (stop with Ctrl+C)', flush=True)
     app.run(port=port, debug=False)
@@ -460,6 +469,10 @@ if __name__ == '__main__':
     parser.add_argument('--port', type=int, default=8050)
     parser.add_argument('--top', type=int, default=TOP_N, help='single models and ensembles kept, each')
     parser.add_argument('--ylabel', default=None, help="the values' unit, e.g. EUR/MWh")
+    parser.add_argument('--timezone', default=None,
+                        help="read --data's times as UTC and show them on this time zone's clock (for a run "
+                             "on local days), e.g. Europe/Bucharest")
     arguments = parser.parse_args()
     run_dashboard(arguments.folder or latest_run(arguments.results), arguments.data, arguments.time_column,
-                  arguments.value_column, arguments.port, arguments.top, ylabel=arguments.ylabel)
+                  arguments.value_column, arguments.port, arguments.top, ylabel=arguments.ylabel,
+                  timezone=arguments.timezone)
