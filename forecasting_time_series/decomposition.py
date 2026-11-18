@@ -10,6 +10,9 @@ over the forecast period and added back:
         'drift'  - the average slope over the last `trend_window` observations continues;
         'linear' - a straight line fitted to the last `trend_window` trend values continues;
         'damped' - like 'drift', but the slope shrinks by the factor `damping` at every step.
+    With `trend_aggregate` (e.g. 24 for days, 168 for weeks of hourly data) the trend is extended from its
+    means over blocks of that many observations instead (the last block ending with the data): the level is
+    the last block's mean, the slope is between block means, and the damping applies once per block.
 
 Settings (a dict; only 'periods' is required). See docs/decomposition.md for a full guide.
     periods        : seasonal periods in observations, e.g. (96, 672) for daily and weekly with 15-minute data
@@ -24,6 +27,9 @@ Settings (a dict; only 'periods' is required). See docs/decomposition.md for a f
                      slow and very smooth, so large jumps there cost almost nothing in accuracy.
     robust         : down-weight outliers (slower)
     trend, trend_window, damping : see above (trend_window defaults to the longest period)
+    trend_aggregate : None (every observation), or the observations per block whose means set the extension
+                     (trend_window then a whole number of blocks, at least two; default the longest period
+                     rounded up to whole blocks, and at least two blocks)
 
 A fitted decomposition depends only on the data it is fitted on and on these settings, so
 it is cached: the many method combinations evaluated on the same validation split reuse it.
@@ -38,7 +44,7 @@ import numpy as np
 
 DEFAULTS = {'method': 'mstl', 'window': None, 'seasonal_jump': 1, 'trend_jump': 20, 'low_pass_jump': 20,
             'seasonal_windows': None, 'trend_smoother': None, 'robust': False, 'trend': 'drift',
-            'trend_window': None, 'damping': 0.99}
+            'trend_window': None, 'damping': 0.99, 'trend_aggregate': None}
 TREND_TYPES = ('flat', 'drift', 'linear', 'damped')
 CACHE_SIZE = 256
 
@@ -81,10 +87,21 @@ def normalise_spec(spec: dict) -> dict:
             raise ValueError(f'{jump} must be a whole number of at least 1; got {s[jump]!r}')
     if s['trend'] not in TREND_TYPES:
         raise ValueError(f'trend must be one of {TREND_TYPES}; got {s["trend"]!r}')
+    block = s['trend_aggregate']
+    if block is not None and not (_positive_int(block) and block >= 2):
+        raise ValueError(f'trend_aggregate must be None or a whole number of at least 2 (observations per '
+                         f'block, e.g. 24 for days of hourly data); got {block!r}')
     if s['trend'] in ('drift', 'linear', 'damped'):
-        s['trend_window'] = s['trend_window'] or max(s['periods'])
-        if not (_positive_int(s['trend_window']) and s['trend_window'] >= 2):
-            raise ValueError(f'trend_window must be a whole number of at least 2; got {s["trend_window"]!r}')
+        if block is None:
+            s['trend_window'] = s['trend_window'] or max(s['periods'])
+            if not (_positive_int(s['trend_window']) and s['trend_window'] >= 2):
+                raise ValueError(f'trend_window must be a whole number of at least 2; got {s["trend_window"]!r}')
+        else:
+            s['trend_window'] = s['trend_window'] or max(-(-max(s['periods']) // block) * block, 2 * block)
+            if not (_positive_int(s['trend_window']) and s['trend_window'] % block == 0
+                    and s['trend_window'] >= 2 * block):
+                raise ValueError(f'with trend_aggregate {block}, trend_window must be a whole number of blocks, '
+                                 f'at least two ({2 * block}, {3 * block}, ...); got {s["trend_window"]!r}')
     else:
         s['trend_window'] = None
     if s['trend'] == 'damped':
@@ -103,6 +120,8 @@ def label(spec: dict) -> str:
         trend += f' {s["trend_window"]}'
     if s['damping'] is not None:
         trend += f' x{s["damping"]:g}'
+    if s['trend_aggregate'] is not None:
+        trend += f' by {s["trend_aggregate"]}'
     parts.append(trend)
     if s['seasonal_windows'] is not None:
         parts.append('seasonal smoothers ' + '/'.join(str(w) for w in s['seasonal_windows']))
@@ -123,7 +142,7 @@ def minimum_rows(spec: dict) -> int:
 
 def mstl_options(periods, window=(None,), trend=('drift',), trend_window=(None,), damping=(0.99,),
                  seasonal_windows=(None,), trend_smoother=(None,), seasonal_jump=(1,), trend_jump=(20,),
-                 low_pass_jump=(20,), robust=(False,)) -> list[dict]:
+                 low_pass_jump=(20,), robust=(False,), trend_aggregate=(None,)) -> list[dict]:
     """Every combination of the given MSTL settings, as a list ready for `decomposition_range`.
     Each argument is one value or a list of values to try; `periods` is fixed. For seasonal_windows,
     one option is a tuple with one value per period, e.g. (11, 15), so several options are a list of
@@ -136,9 +155,9 @@ def mstl_options(periods, window=(None,), trend=('drift',), trend_window=(None,)
                                     all(isinstance(w, int) for w in seasonal_windows)):
         seasonal_windows = [seasonal_windows]  # a single option given directly
     names = ('window', 'trend', 'trend_window', 'damping', 'seasonal_windows', 'trend_smoother',
-             'seasonal_jump', 'trend_jump', 'low_pass_jump', 'robust')
+             'seasonal_jump', 'trend_jump', 'low_pass_jump', 'robust', 'trend_aggregate')
     values = (window, trend, trend_window, damping, seasonal_windows, trend_smoother,
-              seasonal_jump, trend_jump, low_pass_jump, robust)
+              seasonal_jump, trend_jump, low_pass_jump, robust, trend_aggregate)
     options, seen = [], set()
     for combination in itertools.product(*(as_tuple(v) for v in values)):
         spec = normalise_spec({'periods': tuple(periods), **dict(zip(names, combination))})
@@ -186,6 +205,8 @@ class MSTLDecomposition:
         return total
 
     def _trend_ahead(self, steps):
+        if self.spec['trend_aggregate'] is not None:
+            return self._trend_ahead_by_blocks(steps)
         last = self.trend[-1]
         kind = self.spec['trend']
         if kind == 'flat':
@@ -200,6 +221,34 @@ class MSTLDecomposition:
             return last + slope * steps
         phi = self.spec['damping']  # damped: slope * (phi + phi^2 + ... + phi^h)
         return last + slope * np.cumsum(phi ** steps)
+
+    def _trend_ahead_by_blocks(self, steps):
+        """The trend extended from its block means (trend_aggregate observations each, the last block ending
+        with the data). The level is the last block's mean, placed at that block's centre (a - 1) / 2 steps
+        before the end; flat holds it; drift and damped continue the slope between the first and last block
+        means of trend_window, linear a straight line fitted to those block means (at their centres). The
+        slope is per block, spread evenly over its observations; damped shrinks it by `damping` once per
+        block ahead (the first block ahead at damping, the second at damping², ...)."""
+        a = self.spec['trend_aggregate']
+        kind = self.spec['trend']
+        count = (self.spec['trend_window'] or a) // a  # blocks used (flat: the last one)
+        count = min(count, len(self.trend) // a)
+        if count < (1 if kind == 'flat' else 2):
+            raise ValueError(f'too few observations to extend the trend by blocks of {a}: {len(self.trend)}')
+        means = self.trend[len(self.trend) - count * a:].reshape(count, a).mean(axis=1)
+        centre_offset = (a - 1) / 2  # the last block's centre is this many steps before the end of the data
+        if kind == 'flat':
+            return np.full(len(steps), means[-1])
+        if kind == 'linear':
+            centres = np.arange(count) * a  # block centres, in steps from the first block's centre
+            slope, intercept = np.polyfit(centres, means, 1)  # slope per step
+            return intercept + slope * ((count - 1) * a + centre_offset + steps)
+        slope = (means[-1] - means[0]) / ((count - 1) * a)  # per step
+        if kind == 'drift':
+            return means[-1] + slope * (centre_offset + steps)
+        phi = self.spec['damping']  # damped, once per block ahead: step s of block ceil(s / a) adds slope * phi^block
+        weights = phi ** np.ceil(np.arange(1, int(steps.max()) + 1) / a)
+        return means[-1] + slope * (centre_offset + np.cumsum(weights)[steps - 1])
 
 
 FIT_SETTINGS = ('periods', 'seasonal_jump', 'trend_jump', 'low_pass_jump', 'robust', 'seasonal_windows',

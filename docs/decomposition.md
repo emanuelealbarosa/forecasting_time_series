@@ -93,6 +93,24 @@ With 15-minute data the slope b is per quarter-hour, so φ applies per quarter-h
 φ = 0.99 halves the slope's effect after about 69 steps (≈ 17 hours); φ = 0.999 after about
 693 steps (≈ 7 days).
 
+**Trend by blocks (`trend_aggregate`)** – with `trend_aggregate = a` (e.g. 24 = days or 168 = weeks of
+hourly data, 96 = days of 15-minute data), the trend is extended from its **block means** instead of
+its single values. The last `trend_window` trend values are cut into blocks of a, the last block ending
+with the data, and each block is replaced by its mean M₁ … M_m (m = `trend_window` / a, at least 2):
+
+| `trend`  | Rule with blocks | Behaviour |
+|----------|------------------|-----------|
+| `flat`   | T(n + h) = M_m | holds the last block's mean (e.g. the last day's level) |
+| `drift`  | T(n + h) = M_m + b·(c + h), b = (M_m − M₁) / ((m − 1)·a) | continues the slope between the first and last block means |
+| `linear` | straight line fitted to M₁ … M_m at the blocks' centres, continued | least squares over the block means |
+| `damped` | T(n + h) = M_m + b·(c + Σ φ^⌈s/a⌉ for s = 1 … h) | the slope shrinks by φ **once per block**: the first block ahead at φ, the next at φ², ... |
+
+c = (a − 1)/2 is how far the last block's centre lies before the end of the data, so the level starts
+at the last block's mean. The slope b is still per observation, spread evenly over each block; only the
+damping counts in blocks, so `damping = 0.9` with `trend_aggregate = 24` means 0.9 **per day**.
+`trend_window` must be a whole number of blocks; its default is the longest period rounded up to whole
+blocks, and at least two blocks.
+
 ## 5. Settings reference
 
 A decomposition option is a dict. Only `periods` is required; everything else has a default.
@@ -105,7 +123,8 @@ A decomposition option is a dict. Only `periods` is required; everything else ha
 | `trend_smoother` | `None` → statsmodels default (≈ 1121 for a weekly period with seasonal window 15, i.e. ≈ 11.7 days of 15-minute data) | odd number > the longest period (≥ 673 for 672) | **Memory of the trend, in observations**: how many observations the trend is smoothed over. Smaller = follows changes faster but noisier. |
 | `trend` | `'drift'` | `'flat'`, `'drift'`, `'linear'`, `'damped'` | **How the trend is extended** over the forecast period (section 4). |
 | `trend_window` | longest period | whole number ≥ 2 | For `drift` / `linear` / `damped`: how many of the last trend values set the slope. Ignored for `flat`. |
-| `damping` | `0.99` | 0 < φ ≤ 1 | For `damped`: how fast the slope fades, per step. Ignored otherwise. |
+| `damping` | `0.99` | 0 < φ ≤ 1 | For `damped`: how fast the slope fades, per step (per block with `trend_aggregate`). Ignored otherwise. |
+| `trend_aggregate` | `None` | `None`, or a whole number ≥ 2 | **Extend the trend from its block means** (section 4): observations per block, e.g. 24 for days of hourly data. `trend_window` must then be a whole number of blocks (≥ 2). Changes only the extension, not the fit. |
 | `seasonal_jump` | `1` | whole number ≥ 1 | Speed/accuracy of the seasonal smoother (see 5.1). Keep at 1. |
 | `trend_jump` | `20` | whole number ≥ 1 | Speed/accuracy of the trend smoother (see 5.1). |
 | `low_pass_jump` | `20` | whole number ≥ 1 | Speed/accuracy of STL's internal low-pass filter (see 5.1). |
@@ -241,7 +260,7 @@ It is therefore **cached** and reused:
 
 - by every method combination evaluated on the same validation split;
 - by options that differ only in how the trend is **extended** (`trend`, `trend_window`,
-  `damping`) – they share one fit.
+  `damping`, `trend_aggregate`) – they share one fit.
 
 So the cost is roughly *number of splits × number of distinct fit settings × number of
 transforms × time per fit*. With 28 splits, one fit setting, two transforms and the default
